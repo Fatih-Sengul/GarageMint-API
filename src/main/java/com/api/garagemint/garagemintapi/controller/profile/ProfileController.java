@@ -4,11 +4,12 @@ import com.api.garagemint.garagemintapi.dto.profile.*;
 import com.api.garagemint.garagemintapi.service.profile.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/profiles")
+@RequestMapping(value = "/api/v1/profiles", produces = "application/json")
 @RequiredArgsConstructor
 public class ProfileController {
 
@@ -26,8 +27,20 @@ public class ProfileController {
         return profileService.checkUsernameAvailability(username);
     }
 
+    // Kullanıcı adı önerileri (autocomplete)
+    @GetMapping("/suggest-username")
+    public UsernameSuggestionsDto suggestUsername(@RequestParam(required = false) String base) {
+        return profileService.suggestUsernames(base);
+    }
+
     // ---- Owner Endpoints (mock userId = 1L) ----
-    // Gerçekte userId SecurityContext'ten alınacak
+    // TODO: Gerçekte userId SecurityContext'ten alınacak
+
+    // Profil yoksa oluştur + getir (idempotent)
+    @PostMapping("/me/init")
+    public ProfileOwnerDto initMyProfile() {
+        return profileService.ensureMyProfile(1L);
+    }
 
     @GetMapping("/me")
     public ProfileOwnerDto getMyProfile() {
@@ -35,7 +48,7 @@ public class ProfileController {
     }
 
     @PutMapping("/me")
-    public ProfileOwnerDto updateMyProfile(@RequestBody ProfileUpdateRequest req) {
+    public ProfileOwnerDto updateMyProfile(@Valid @RequestBody ProfileUpdateRequest req) {
         return profileService.updateMyProfile(1L, req);
     }
 
@@ -50,22 +63,22 @@ public class ProfileController {
     }
 
     @PutMapping("/me/links")
-    public List<ProfileLinkDto> updateMyLinks(@RequestBody List<ProfileLinkDto> links) {
+    public List<ProfileLinkDto> updateMyLinks(@RequestBody List<@Valid ProfileLinkDto> links) {
         return profileService.upsertMyLinks(1L, links);
     }
 
     @PutMapping("/me/prefs")
-    public ProfilePrefsDto updateMyPrefs(@RequestBody ProfilePrefsUpdateRequest req) {
+    public ProfilePrefsDto updateMyPrefs(@Valid @RequestBody ProfilePrefsUpdateRequest req) {
         return profileService.updateMyPrefs(1L, req);
     }
 
     @PutMapping("/me/notifications")
-    public NotificationSettingsDto updateMyNotifications(@RequestBody NotificationSettingsUpdateRequest req) {
+    public NotificationSettingsDto updateMyNotifications(@Valid @RequestBody NotificationSettingsUpdateRequest req) {
         return profileService.updateMyNotificationSettings(1L, req);
     }
 
     @PutMapping("/me/featured")
-    public List<ProfileFeaturedItemDto> updateMyFeatured(@RequestBody List<ProfileFeaturedItemDto> items) {
+    public List<ProfileFeaturedItemDto> updateMyFeatured(@RequestBody List<@Valid ProfileFeaturedItemDto> items) {
         return profileService.updateMyFeaturedItems(1L, items);
     }
 }
