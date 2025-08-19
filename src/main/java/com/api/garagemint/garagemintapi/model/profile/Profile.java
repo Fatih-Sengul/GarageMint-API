@@ -1,13 +1,9 @@
-package com.api.garagemint.garagemintapi.model;
+package com.api.garagemint.garagemintapi.model.profile;
 
 import com.api.garagemint.garagemintapi.model.common.BaseTime;
 import jakarta.persistence.*;
 import lombok.*;
 import jakarta.validation.constraints.*;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.*;
 
 @Entity
 @Table(name = "profiles",

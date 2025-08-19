@@ -1,6 +1,6 @@
 package com.api.garagemint.garagemintapi;
 
-import com.api.garagemint.garagemintapi.model.*;
+import com.api.garagemint.garagemintapi.model.profile.*;
 import com.api.garagemint.garagemintapi.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

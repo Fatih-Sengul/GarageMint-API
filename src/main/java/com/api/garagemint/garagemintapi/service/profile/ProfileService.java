@@ -2,7 +2,7 @@ package com.api.garagemint.garagemintapi.service.profile;
 
 import com.api.garagemint.garagemintapi.dto.profile.*;
 import com.api.garagemint.garagemintapi.mapper.profile.ProfileMapper;
-import com.api.garagemint.garagemintapi.model.*;
+import com.api.garagemint.garagemintapi.model.profile.*;
 import com.api.garagemint.garagemintapi.repository.NotificationSettingsRepository;
 import com.api.garagemint.garagemintapi.repository.ProfileFeaturedItemRepository;
 import com.api.garagemint.garagemintapi.repository.ProfileLinkRepository;

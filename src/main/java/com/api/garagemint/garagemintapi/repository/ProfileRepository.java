@@ -1,7 +1,7 @@
 package com.api.garagemint.garagemintapi.repository;
 
 
-import com.api.garagemint.garagemintapi.model.Profile;
+import com.api.garagemint.garagemintapi.model.profile.Profile;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,7 +1,7 @@
 package com.api.garagemint.garagemintapi.mapper.profile;
 
 import com.api.garagemint.garagemintapi.dto.profile.*;
-import com.api.garagemint.garagemintapi.model.*;
+import com.api.garagemint.garagemintapi.model.profile.*;
 import org.mapstruct.*;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.api.garagemint.garagemintapi.service.profile.validator;
 
-import com.api.garagemint.garagemintapi.model.ProfileLinkType;
+import com.api.garagemint.garagemintapi.model.profile.ProfileLinkType;
 
 import java.net.URI;
 import java.util.Set;
