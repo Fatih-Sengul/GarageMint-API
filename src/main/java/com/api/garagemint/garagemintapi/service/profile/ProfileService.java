@@ -77,7 +77,56 @@ public class ProfileService {
     return result;
   }
 
+  @Transactional(readOnly = true)
+  public UsernameSuggestionsDto suggestUsernames(String base) {
+    String seed = (base == null ? "user" : base.trim().toLowerCase()).replaceAll("[^a-z0-9_]", "_");
+    if (seed.length() < 3) seed = seed + "123";
+    if (seed.length() > 16) seed = seed.substring(0, 16);
+
+    ArrayList<String> list = new ArrayList<>();
+
+    if (seed.matches("^[a-z0-9_]{3,32}$")
+        && !ReservedUsernames.isReserved(seed)
+        && !profileRepo.existsByUsernameIgnoreCase(seed)) {
+      list.add(seed);
+    }
+
+    for (int i = 1; list.size() < 5 && i <= 99; i++) {
+      String u = seed + i;
+      if (!profileRepo.existsByUsernameIgnoreCase(u)) list.add(u);
+    }
+
+    return UsernameSuggestionsDto.builder()
+        .candidates(list).build();
+  }
+
   /* -------------------- OWNER -------------------- */
+
+  @Transactional
+  public ProfileOwnerDto ensureMyProfile(Long userId) {
+    return profileRepo.findByUserId(userId)
+        .map(p -> getMyProfile(userId))
+        .orElseGet(() -> {
+          String u = generateUniqueUsername("user" + userId);
+          var p = Profile.builder()
+              .userId(userId)
+              .username(u)
+              .displayName("User " + userId)
+              .language("en")
+              .isPublic(true)
+              .build();
+          p = profileRepo.save(p);
+
+          prefsRepo.save(ProfilePrefs.builder()
+              .profileId(p.getId()).build());
+          notifRepo.save(NotificationSettings.builder()
+              .profileId(p.getId()).build());
+          statsRepo.save(ProfileStats.builder()
+              .profileId(p.getId()).build());
+
+          return getMyProfile(userId);
+        });
+  }
 
   @Transactional(readOnly = true)
   public ProfileOwnerDto getMyProfile(Long userId) {
@@ -227,6 +276,20 @@ public class ProfileService {
   }
 
   /* -------------------- helpers -------------------- */
+
+  private String generateUniqueUsername(String base) {
+    String seed = base == null ? "user" : base.trim().toLowerCase().replaceAll("[^a-z0-9_]", "_");
+    if (seed.length() < 3) seed = seed + "123";
+    if (seed.length() > 16) seed = seed.substring(0, 16);
+
+    String u = seed;
+    int i = 1;
+    while (profileRepo.existsByUsernameIgnoreCase(u)
+        || ReservedUsernames.isReserved(u)) {
+      u = seed + (i++);
+    }
+    return u;
+  }
 
   private Profile loadByUserId(Long userId) {
     if (userId == null) throw new ValidationException("userId is required");

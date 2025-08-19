@@ -19,8 +19,14 @@ spring:
       hibernate:
         format_sql: true
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "health,info"
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: "health,info"
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger
