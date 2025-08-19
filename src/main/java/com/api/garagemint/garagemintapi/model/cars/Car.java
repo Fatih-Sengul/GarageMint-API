@@ -1,4 +1,4 @@
-package com.api.garagemint.garagemintapi.model.profile;
+package com.api.garagemint.garagemintapi.model.cars;
 
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
