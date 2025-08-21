@@ -1,5 +1,6 @@
 package com.api.garagemint.garagemintapi.model.cars;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,7 +26,8 @@ class Car {
     private UUID id;
     private String make;
     private String model;
-    private int year;
+    @Column(name = "model_year")
+    private int modelYear;
     private String color;
     private BigDecimal estimatedValue;
     @ElementCollection
