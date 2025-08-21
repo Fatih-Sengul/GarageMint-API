@@ -9,7 +9,8 @@ import java.util.List;
 
 @Mapper(
     componentModel = "spring",
-    unmappedTargetPolicy = ReportingPolicy.IGNORE
+    unmappedTargetPolicy = ReportingPolicy.IGNORE,
+    imports = {ListingType.class, Condition.class, ListingStatus.class}
 )
 public interface ListingMapper {
 
