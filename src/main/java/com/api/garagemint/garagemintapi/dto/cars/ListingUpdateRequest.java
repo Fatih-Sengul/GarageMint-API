@@ -24,7 +24,7 @@ public class ListingUpdateRequest {
   @Size(max=16)
   private String scale;
 
-  private Short year;
+  private Short modelYear;
 
   @Size(max=24)
   private String condition;
