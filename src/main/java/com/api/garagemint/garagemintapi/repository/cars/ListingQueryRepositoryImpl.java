@@ -45,16 +45,16 @@ public class ListingQueryRepositoryImpl implements ListingQueryRepository {
     if (f.getLimitedEdition() != null) ps.add(cb.equal(root.get("limitedEdition"), f.getLimitedEdition()));
     if (f.getType() != null && !f.getType().isBlank()) ps.add(cb.equal(root.get("type"), ListingType.valueOf(f.getType().toUpperCase())));
     if (f.getLocation() != null && !f.getLocation().isBlank()) ps.add(cb.like(cb.lower(root.get("location")), "%" + f.getLocation().toLowerCase() + "%"));
-    if (f.getYearFrom() != null) ps.add(cb.greaterThanOrEqualTo(root.get("year"), f.getYearFrom()));
-    if (f.getYearTo() != null) ps.add(cb.lessThanOrEqualTo(root.get("year"), f.getYearTo()));
+    if (f.getModelYearFrom() != null) ps.add(cb.greaterThanOrEqualTo(root.get("modelYear"), f.getModelYearFrom()));
+    if (f.getModelYearTo() != null) ps.add(cb.lessThanOrEqualTo(root.get("modelYear"), f.getModelYearTo()));
     if (f.getPriceMin() != null) ps.add(cb.greaterThanOrEqualTo(root.get("price"), f.getPriceMin()));
     if (f.getPriceMax() != null) ps.add(cb.lessThanOrEqualTo(root.get("price"), f.getPriceMax()));
 
     cq.where(ps.toArray(Predicate[]::new));
 
     Path<?> sortPath = switch (f.getSortBy()) {
-      case "price" -> root.get("price");
-      case "year"  -> root.get("year");
+      case "price"     -> root.get("price");
+      case "modelYear" -> root.get("modelYear");
       default -> root.get("createdAt");
     };
     cq.orderBy("ASC".equalsIgnoreCase(f.getSortDir()) ? cb.asc(sortPath) : cb.desc(sortPath));

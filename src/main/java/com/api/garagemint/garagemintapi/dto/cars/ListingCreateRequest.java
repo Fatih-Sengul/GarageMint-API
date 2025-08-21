@@ -28,7 +28,7 @@ public class ListingCreateRequest {
   @Size(max=16)
   private String scale;           // "1:64" gibi
 
-  private Short year;
+  private Short modelYear;
 
   @Size(max=24)
   private String condition;       // "NEW","MINT","USED","CUSTOM" (enum-like string)

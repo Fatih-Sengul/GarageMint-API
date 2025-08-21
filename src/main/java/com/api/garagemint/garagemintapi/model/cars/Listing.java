@@ -48,8 +48,8 @@ public class Listing extends BaseTime {
   @Column(length=16)
   private String scale;
 
-  @Column(name="year_made")
-  private Short year;
+  @Column(name="model_year")
+  private Short modelYear;
 
   @Enumerated(EnumType.STRING)
   @Column(length=24)

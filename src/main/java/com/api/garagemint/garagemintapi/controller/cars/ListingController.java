@@ -38,8 +38,8 @@ public class ListingController {
       @RequestParam(required = false) String type,
       @RequestParam(required = false) String status,
       @RequestParam(required = false) String location,
-      @RequestParam(required = false) Short yearFrom,
-      @RequestParam(required = false) Short yearTo,
+      @RequestParam(required = false) Short modelYearFrom,
+      @RequestParam(required = false) Short modelYearTo,
       @RequestParam(required = false) BigDecimal priceMin,
       @RequestParam(required = false) BigDecimal priceMax,
       @RequestParam(defaultValue = "0") Integer page,
@@ -59,8 +59,8 @@ public class ListingController {
         .type(type)
         .status(status)
         .location(location)
-        .yearFrom(yearFrom)
-        .yearTo(yearTo)
+        .modelYearFrom(modelYearFrom)
+        .modelYearTo(modelYearTo)
         .priceMin(priceMin)
         .priceMax(priceMax)
         .page(page)

@@ -27,8 +27,8 @@ public class ListingFilterRequest {
 
   private String location;         // free-text
 
-  private Short yearFrom;
-  private Short yearTo;
+  private Short modelYearFrom;
+  private Short modelYearTo;
 
   private BigDecimal priceMin;
   private BigDecimal priceMax;
@@ -40,7 +40,7 @@ public class ListingFilterRequest {
   @Builder.Default
   private Integer size = 20;
 
-  // createdAt, price, year
+  // createdAt, price, modelYear
   @Builder.Default
   private String sortBy = "createdAt";
 

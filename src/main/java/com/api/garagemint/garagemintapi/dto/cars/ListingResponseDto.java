@@ -24,7 +24,7 @@ public class ListingResponseDto {
   private String seriesName;   // opsiyonel
   private String modelName;
   private String scale;
-  private Short year;
+  private Short modelYear;
   private String condition;
   private Boolean limitedEdition;
   private String theme;
