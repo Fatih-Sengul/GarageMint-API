@@ -7,9 +7,13 @@ import java.util.List;
 
 public interface ProfileLinkRepository extends JpaRepository<ProfileLink, Long> {
 
-    List<ProfileLink> findByProfileIdOrderByIdxAsc(Long profileId);
+    List<ProfileLink> findByProfile_IdOrderByIdxAsc(Long profileId);
 
-    List<ProfileLink> findByProfileIdAndIsPublicTrueOrderByIdxAsc(Long profileId);
+    List<ProfileLink> findByProfile_IdAndIsPublicTrueOrderByIdxAsc(Long profileId);
 
-    void deleteByProfileId(Long profileId);
+    void deleteByProfile_Id(Long profileId);
+
+    /* Projection kullanım istersen:
+       List<com.api.garagemint.garagemintapi.repository.projection.PublicLinkView> findByProfile_IdAndIsPublicTrueOrderByIdxAsc(Long profileId);
+    */
 }

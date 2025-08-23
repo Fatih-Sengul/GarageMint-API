@@ -1,5 +1,6 @@
 package com.api.garagemint.garagemintapi.dto.profile;
 
+import com.api.garagemint.garagemintapi.model.profile.DigestFrequency;
 import lombok.*;
 
 @Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
@@ -9,5 +10,5 @@ public class NotificationSettingsDto {
   private Boolean emailFavorite;
   private Boolean emailListingActivity;
   private Boolean pushGeneral;
-  private String  digestFrequency; // OFF | DAILY | WEEKLY
+  private DigestFrequency digestFrequency; // OFF | DAILY | WEEKLY
 }

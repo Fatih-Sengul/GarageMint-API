@@ -10,6 +10,9 @@ import java.time.Instant;
 @MappedSuperclass
 @Getter
 public abstract class BaseTime {
-    @CreationTimestamp protected Instant createdAt;
-    @UpdateTimestamp   protected Instant updatedAt;
+    @CreationTimestamp
+    protected Instant createdAt;
+
+    @UpdateTimestamp
+    protected Instant updatedAt;
 }

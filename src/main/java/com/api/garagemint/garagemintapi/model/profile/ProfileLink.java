@@ -18,8 +18,9 @@ public class ProfileLink extends BaseTime {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="profile_id", nullable=false)
-    private Long profileId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="profile_id", nullable=false, foreignKey=@ForeignKey(name="fk_link_profile"))
+    private Profile profile;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false, length=24)
