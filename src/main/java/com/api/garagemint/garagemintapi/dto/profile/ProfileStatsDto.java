@@ -5,10 +5,10 @@ import java.time.Instant;
 
 @Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
 public class ProfileStatsDto {
-  private Integer itemsCount;
   private Integer listingsActiveCount;
-  private Integer favoritesCount;
+  private Integer listingsTotalCount;
   private Integer followersCount;
+  private Integer followingCount;
   private Short   responseRate;
   private Instant lastActiveAt;
 }

@@ -20,10 +20,13 @@ public class ProfileStats {
     @JoinColumn(name="profile_id", foreignKey=@ForeignKey(name="fk_stats_profile"))
     private Profile profile;
 
-    @Builder.Default private Integer itemsCount = 0;
+    /* Listing odaklı sayaçlar */
     @Builder.Default private Integer listingsActiveCount = 0;
-    @Builder.Default private Integer favoritesCount = 0;
-    @Builder.Default private Integer followersCount = 0; // 2. sprint
-    @Builder.Default private Short responseRate = 0;     // %
+    @Builder.Default private Integer listingsTotalCount  = 0;
+
+    /* Sosyal metrikler */
+    @Builder.Default private Integer followersCount = 0;
+    @Builder.Default private Integer followingCount = 0;
+    @Builder.Default private Short   responseRate    = 0;     // %
     private Instant lastActiveAt;
 }

@@ -10,5 +10,5 @@ public class NotificationSettingsDto {
   private Boolean emailFavorite;
   private Boolean emailListingActivity;
   private Boolean pushGeneral;
-  private DigestFrequency digestFrequency; // OFF | DAILY | WEEKLY
+  private DigestFrequency digestFrequency;
 }

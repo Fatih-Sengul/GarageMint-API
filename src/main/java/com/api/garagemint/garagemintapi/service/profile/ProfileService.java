@@ -24,7 +24,6 @@ public class ProfileService {
   private final ProfilePrefsRepository prefsRepo;
   private final NotificationSettingsRepository notifRepo;
   private final ProfileStatsRepository statsRepo;
-  private final ProfileFeaturedItemRepository featuredRepo;
   private final ProfileMapper mapper;
 
   /* -------------------- PUBLIC -------------------- */
@@ -43,16 +42,12 @@ public class ProfileService {
       dto.setLocation(null);
       dto.setWebsiteUrl(null);
       dto.setLinks(List.of());
-      dto.setFeaturedItems(List.of());
       dto.setStats(null);
       return dto;
     }
 
     var links = linkRepo.findByProfile_IdAndIsPublicTrueOrderByIdxAsc(p.getId());
     dto.setLinks(mapper.toLinkDtoList(links));
-
-    var feats = featuredRepo.findTop9ByIdProfileIdOrderByIdxAsc(p.getId());
-    dto.setFeaturedItems(mapper.toFeaturedDtoList(feats));
 
     var stats = statsRepo.findById(p.getId())
         .orElseGet(() -> ProfileStats.builder().profileId(p.getId()).build());
@@ -136,9 +131,6 @@ public class ProfileService {
 
     var stats = statsRepo.findById(p.getId()).orElseGet(() -> defaultsStats(p));
     ownerDto.setStats(mapper.toDto(stats));
-
-    var feats = featuredRepo.findByIdProfileIdOrderByIdxAsc(p.getId());
-    ownerDto.setFeaturedItems(mapper.toFeaturedDtoList(feats));
 
     return ownerDto;
   }
@@ -235,36 +227,6 @@ public class ProfileService {
     mapper.updateNotifFromDto(req, ns);
     notifRepo.save(ns);
     return mapper.toDto(ns);
-  }
-
-  @Transactional
-  public List<ProfileFeaturedItemDto> updateMyFeaturedItems(Long userId, List<ProfileFeaturedItemDto> items) {
-    var p = loadByUserId(userId);
-    if (items == null) items = List.of();
-    if (items.size() > 9) throw new BusinessRuleException("maximum 9 featured items allowed");
-
-    var idxSet = new HashSet<Integer>();
-    var idSet = new HashSet<Long>();
-    for (var it : items) {
-      if (it.getItemId() == null) throw new ValidationException("itemId is required");
-      if (!idSet.add(it.getItemId())) throw new ValidationException("duplicate itemId");
-      if (it.getIdx() == null || it.getIdx() < 0) throw new ValidationException("idx must be >= 0");
-      if (!idxSet.add(it.getIdx())) throw new ValidationException("idx must be unique");
-    }
-
-    featuredRepo.deleteByIdProfileId(p.getId());
-
-    var toSave = items.stream()
-        .sorted(Comparator.comparingInt(ProfileFeaturedItemDto::getIdx))
-        .map(it -> ProfileFeaturedItem.builder()
-            .id(new FeaturedItemId(p.getId(), it.getItemId()))
-            .profile(p)
-            .idx(it.getIdx())
-            .build())
-        .toList();
-
-    var saved = featuredRepo.saveAll(toSave);
-    return mapper.toFeaturedDtoList(saved);
   }
 
   /* -------------------- helpers -------------------- */
