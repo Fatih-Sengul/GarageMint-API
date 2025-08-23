@@ -21,7 +21,6 @@ public class ProfilePublicDto {
   private Instant createdAt;
   private Instant updatedAt;
 
-  private List<ProfileLinkDto> links;                 // public görünenler
-  private List<ProfileFeaturedItemDto> featuredItems; // vitrin
-  private ProfileStatsDto stats;                      // sayaçlar
+  private List<ProfileLinkDto> links;   // public görünenler
+  private ProfileStatsDto stats;        // sayaçlar
 }

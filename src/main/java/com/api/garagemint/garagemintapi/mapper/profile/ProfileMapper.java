@@ -11,12 +11,10 @@ public interface ProfileMapper {
 
   // Entity -> DTO
   @Mapping(target = "links", ignore = true)
-  @Mapping(target = "featuredItems", ignore = true)
   @Mapping(target = "stats", ignore = true)
   ProfilePublicDto toPublicDto(Profile profile);
 
   @Mapping(target = "links", ignore = true)
-  @Mapping(target = "featuredItems", ignore = true)
   @Mapping(target = "prefs", ignore = true)
   @Mapping(target = "notificationSettings", ignore = true)
   @Mapping(target = "stats", ignore = true)
@@ -30,11 +28,6 @@ public interface ProfileMapper {
   ProfilePrefsDto toDto(ProfilePrefs prefs);
   NotificationSettingsDto toDto(NotificationSettings ns);
   ProfileStatsDto toDto(ProfileStats stats);
-
-  // Featured
-  @Mapping(target = "itemId", source = "id.itemId")
-  ProfileFeaturedItemDto toDto(ProfileFeaturedItem fi);
-  List<ProfileFeaturedItemDto> toFeaturedDtoList(List<ProfileFeaturedItem> list);
 
   // Update mappings (DTO -> Entity) — owner update
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

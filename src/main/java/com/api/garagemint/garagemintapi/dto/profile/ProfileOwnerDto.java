@@ -21,8 +21,7 @@ public class ProfileOwnerDto {
   private Instant createdAt;
   private Instant updatedAt;
 
-  private List<ProfileLinkDto> links;                 // tüm linkler
-  private List<ProfileFeaturedItemDto> featuredItems;
+  private List<ProfileLinkDto> links;
   private ProfilePrefsDto prefs;
   private NotificationSettingsDto notificationSettings;
   private ProfileStatsDto stats;

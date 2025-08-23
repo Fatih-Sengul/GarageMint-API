@@ -76,10 +76,5 @@ public class ProfileController {
     public NotificationSettingsDto updateMyNotifications(@Valid @RequestBody NotificationSettingsUpdateRequest req) {
         return profileService.updateMyNotificationSettings(1L, req);
     }
-
-    @PutMapping("/me/featured")
-    public List<ProfileFeaturedItemDto> updateMyFeatured(@RequestBody List<@Valid ProfileFeaturedItemDto> items) {
-        return profileService.updateMyFeaturedItems(1L, items);
-    }
 }
 

@@ -6,7 +6,7 @@ import lombok.*;
 @Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
 public class ProfileLinkDto {
   private Long id;
-  private ProfileLinkType type;   // INSTAGRAM, X, ...
+  private ProfileLinkType type;
   private String label;
   private String url;
   private Integer idx;

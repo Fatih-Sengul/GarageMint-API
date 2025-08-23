@@ -23,6 +23,6 @@ public class ProfilePrefs {
     @Builder.Default private boolean showLinks = true;
     @Builder.Default private boolean searchable = true;
     @Builder.Default private boolean allowDm = true;
-    @Builder.Default private boolean showCollection = true;
+    @Builder.Default private boolean showCollection = false; // collection yok, default false
     @Builder.Default private boolean showListings = true;
 }

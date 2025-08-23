@@ -23,10 +23,10 @@ public class NotificationSettings {
     @Builder.Default private boolean emailFavorite = true;
     @Builder.Default private boolean emailListingActivity = true;
 
-    @Builder.Default private boolean pushGeneral = true; // 2. sprintte gerçek push
+    @Builder.Default private boolean pushGeneral = true;
 
     @Enumerated(EnumType.STRING)
     @Column(length=16, nullable=false)
     @Builder.Default
-    private DigestFrequency digestFrequency = DigestFrequency.WEEKLY; // OFF|DAILY|WEEKLY
+    private DigestFrequency digestFrequency = DigestFrequency.WEEKLY;
 }
