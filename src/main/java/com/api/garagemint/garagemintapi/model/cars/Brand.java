@@ -1,6 +1,6 @@
 package com.api.garagemint.garagemintapi.model.cars;
 
-import com.api.garagemint.garagemintapi.model.profile.common.BaseTime;
+import com.api.garagemint.garagemintapi.model.common.BaseTime;
 import jakarta.persistence.*;
 import lombok.*;
 

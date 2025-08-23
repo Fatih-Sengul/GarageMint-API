@@ -6,7 +6,7 @@ import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ProfileMapper {
 
   // Entity -> DTO
@@ -23,7 +23,6 @@ public interface ProfileMapper {
   ProfileOwnerDto toOwnerDto(Profile profile);
 
   // Links
-  @Mapping(target = "type", expression = "java(link.getType().name())")
   ProfileLinkDto toDto(ProfileLink link);
   List<ProfileLinkDto> toLinkDtoList(List<ProfileLink> links);
 

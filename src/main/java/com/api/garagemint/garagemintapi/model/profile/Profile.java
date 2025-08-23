@@ -4,6 +4,8 @@ import com.api.garagemint.garagemintapi.model.common.BaseTime;
 import jakarta.persistence.*;
 import lombok.*;
 import jakarta.validation.constraints.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "profiles",
@@ -55,4 +57,19 @@ public class Profile extends BaseTime {
 
     @Column(name="is_public") @Builder.Default
     private boolean isPublic = true;
+
+    /* 1–1 shared PK: child tablolarda @MapsId */
+    @OneToOne(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private ProfilePrefs prefs;
+
+    @OneToOne(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private ProfileStats stats;
+
+    @OneToOne(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private NotificationSettings notificationSettings;
+
+    /* 1–N links */
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("idx ASC")
+    private List<ProfileLink> links = new ArrayList<>();
 }

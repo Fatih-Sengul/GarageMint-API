@@ -16,6 +16,11 @@ public class ProfileFeaturedItem {
     @EmbeddedId
     private FeaturedItemId id;
 
+    @MapsId("profileId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="profile_id", foreignKey=@ForeignKey(name="fk_featured_profile"))
+    private Profile profile;
+
     /** 0..8 arası: vitrin sırası */
     @Column(nullable=false)
     private Integer idx;

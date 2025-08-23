@@ -3,12 +3,7 @@ package com.api.garagemint.garagemintapi.service.profile;
 import com.api.garagemint.garagemintapi.dto.profile.*;
 import com.api.garagemint.garagemintapi.mapper.profile.ProfileMapper;
 import com.api.garagemint.garagemintapi.model.profile.*;
-import com.api.garagemint.garagemintapi.repository.NotificationSettingsRepository;
-import com.api.garagemint.garagemintapi.repository.ProfileFeaturedItemRepository;
-import com.api.garagemint.garagemintapi.repository.ProfileLinkRepository;
-import com.api.garagemint.garagemintapi.repository.ProfilePrefsRepository;
-import com.api.garagemint.garagemintapi.repository.ProfileRepository;
-import com.api.garagemint.garagemintapi.repository.ProfileStatsRepository;
+import com.api.garagemint.garagemintapi.repository.*;
 import com.api.garagemint.garagemintapi.service.exception.BusinessRuleException;
 import com.api.garagemint.garagemintapi.service.exception.NotFoundException;
 import com.api.garagemint.garagemintapi.service.exception.ValidationException;
@@ -42,7 +37,7 @@ public class ProfileService {
 
     var dto = mapper.toPublicDto(p);
 
-    if (!Boolean.TRUE.equals(p.isPublic())) {
+    if (!p.isPublic()) {
       dto.setBio(null);
       dto.setBannerUrl(null);
       dto.setLocation(null);
@@ -53,7 +48,7 @@ public class ProfileService {
       return dto;
     }
 
-    var links = linkRepo.findByProfileIdAndIsPublicTrueOrderByIdxAsc(p.getId());
+    var links = linkRepo.findByProfile_IdAndIsPublicTrueOrderByIdxAsc(p.getId());
     dto.setLinks(mapper.toLinkDtoList(links));
 
     var feats = featuredRepo.findTop9ByIdProfileIdOrderByIdxAsc(p.getId());
@@ -117,12 +112,9 @@ public class ProfileService {
               .build();
           p = profileRepo.save(p);
 
-          prefsRepo.save(ProfilePrefs.builder()
-              .profileId(p.getId()).build());
-          notifRepo.save(NotificationSettings.builder()
-              .profileId(p.getId()).build());
-          statsRepo.save(ProfileStats.builder()
-              .profileId(p.getId()).build());
+          prefsRepo.save(ProfilePrefs.builder().profile(p).build());
+          notifRepo.save(NotificationSettings.builder().profile(p).build());
+          statsRepo.save(ProfileStats.builder().profile(p).build());
 
           return getMyProfile(userId);
         });
@@ -133,16 +125,16 @@ public class ProfileService {
     var p = loadByUserId(userId);
     var ownerDto = mapper.toOwnerDto(p);
 
-    var links = linkRepo.findByProfileIdOrderByIdxAsc(p.getId());
+    var links = linkRepo.findByProfile_IdOrderByIdxAsc(p.getId());
     ownerDto.setLinks(mapper.toLinkDtoList(links));
 
-    var prefs = prefsRepo.findById(p.getId()).orElseGet(() -> defaultsPrefs(p.getId()));
+    var prefs = prefsRepo.findById(p.getId()).orElseGet(() -> defaultsPrefs(p));
     ownerDto.setPrefs(mapper.toDto(prefs));
 
-    var notif = notifRepo.findById(p.getId()).orElseGet(() -> defaultsNotif(p.getId()));
+    var notif = notifRepo.findById(p.getId()).orElseGet(() -> defaultsNotif(p));
     ownerDto.setNotificationSettings(mapper.toDto(notif));
 
-    var stats = statsRepo.findById(p.getId()).orElseGet(() -> defaultsStats(p.getId()));
+    var stats = statsRepo.findById(p.getId()).orElseGet(() -> defaultsStats(p));
     ownerDto.setStats(mapper.toDto(stats));
 
     var feats = featuredRepo.findByIdProfileIdOrderByIdxAsc(p.getId());
@@ -207,16 +199,15 @@ public class ProfileService {
       if (l.getUrl() == null || l.getUrl().isBlank()) throw new ValidationException("url is required");
     }
 
-    linkRepo.deleteByProfileId(p.getId());
+    linkRepo.deleteByProfile_Id(p.getId());
 
     var entities = links.stream()
         .sorted(Comparator.comparingInt(ProfileLinkDto::getIdx))
         .map(dto -> {
-          var type = ProfileLinkType.valueOf(dto.getType().toUpperCase());
-          LinkValidator.validate(type, dto.getUrl());
+          LinkValidator.validate(dto.getType(), dto.getUrl());
           return ProfileLink.builder()
-              .profileId(p.getId())
-              .type(type)
+              .profile(p)
+              .type(dto.getType())
               .label(dto.getLabel())
               .url(dto.getUrl().trim())
               .idx(dto.getIdx())
@@ -231,7 +222,7 @@ public class ProfileService {
   @Transactional
   public ProfilePrefsDto updateMyPrefs(Long userId, ProfilePrefsUpdateRequest req) {
     var p = loadByUserId(userId);
-    var prefs = prefsRepo.findById(p.getId()).orElseGet(() -> defaultsPrefs(p.getId()));
+    var prefs = prefsRepo.findById(p.getId()).orElseGet(() -> defaultsPrefs(p));
     mapper.updatePrefsFromDto(req, prefs);
     prefsRepo.save(prefs);
     return mapper.toDto(prefs);
@@ -240,7 +231,7 @@ public class ProfileService {
   @Transactional
   public NotificationSettingsDto updateMyNotificationSettings(Long userId, NotificationSettingsUpdateRequest req) {
     var p = loadByUserId(userId);
-    var ns = notifRepo.findById(p.getId()).orElseGet(() -> defaultsNotif(p.getId()));
+    var ns = notifRepo.findById(p.getId()).orElseGet(() -> defaultsNotif(p));
     mapper.updateNotifFromDto(req, ns);
     notifRepo.save(ns);
     return mapper.toDto(ns);
@@ -267,6 +258,7 @@ public class ProfileService {
         .sorted(Comparator.comparingInt(ProfileFeaturedItemDto::getIdx))
         .map(it -> ProfileFeaturedItem.builder()
             .id(new FeaturedItemId(p.getId(), it.getItemId()))
+            .profile(p)
             .idx(it.getIdx())
             .build())
         .toList();
@@ -297,18 +289,18 @@ public class ProfileService {
         .orElseThrow(() -> new NotFoundException("Profile for user not found"));
   }
 
-  private ProfilePrefs defaultsPrefs(Long profileId) {
-    var p = ProfilePrefs.builder().profileId(profileId).build();
-    return prefsRepo.save(p);
+  private ProfilePrefs defaultsPrefs(Profile p) {
+    var np = ProfilePrefs.builder().profile(p).build();
+    return prefsRepo.save(np);
   }
 
-  private NotificationSettings defaultsNotif(Long profileId) {
-    var n = NotificationSettings.builder().profileId(profileId).build();
-    return notifRepo.save(n);
+  private NotificationSettings defaultsNotif(Profile p) {
+    var ns = NotificationSettings.builder().profile(p).build();
+    return notifRepo.save(ns);
   }
 
-  private ProfileStats defaultsStats(Long profileId) {
-    var s = ProfileStats.builder().profileId(profileId).build();
+  private ProfileStats defaultsStats(Profile p) {
+    var s = ProfileStats.builder().profile(p).build();
     return statsRepo.save(s);
   }
 }

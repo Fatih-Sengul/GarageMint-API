@@ -15,6 +15,11 @@ public class ProfileStats {
     @Column(name="profile_id")
     private Long profileId;
 
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="profile_id", foreignKey=@ForeignKey(name="fk_stats_profile"))
+    private Profile profile;
+
     @Builder.Default private Integer itemsCount = 0;
     @Builder.Default private Integer listingsActiveCount = 0;
     @Builder.Default private Integer favoritesCount = 0;
