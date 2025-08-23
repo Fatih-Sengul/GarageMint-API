@@ -6,6 +6,7 @@ import com.api.garagemint.garagemintapi.model.cars.*;
 import com.api.garagemint.garagemintapi.repository.cars.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional; // <-- EKLENDİ
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -56,6 +57,7 @@ public class TestDataLoader implements CommandLineRunner {
   }
 
   @Override
+  @Transactional // <-- TÜM SEED TEK TRANSACTION
   public void run(String... args) {
     seedProfilesIfEmpty();
     seedCarsIfEmpty();
@@ -65,64 +67,70 @@ public class TestDataLoader implements CommandLineRunner {
     if (profileRepository.count() > 0) return;
 
     for (long i = 1; i <= 5; i++) {
-      Profile profile = profileRepository.save(Profile.builder()
-          .userId(i)
-          .username("user" + i)
-          .displayName("User " + i)
-          .bio("Bio for user " + i)
-          .avatarUrl("https://example.com/avatar" + i + ".png")
-          .bannerUrl("https://example.com/banner" + i + ".png")
-          .location("City " + i)
-          .websiteUrl("https://example.com/user" + i)
-          .language("en")
-          .isVerified(i % 2 == 0)
-          .isPublic(true)
-          .build());
+      // 1) Parent'ı kaydet
+      Profile saved = profileRepository.save(Profile.builder()
+              .userId(i)
+              .username("user" + i)
+              .displayName("User " + i)
+              .bio("Bio for user " + i)
+              .avatarUrl("https://example.com/avatar" + i + ".png")
+              .bannerUrl("https://example.com/banner" + i + ".png")
+              .location("City " + i)
+              .websiteUrl("https://example.com/user" + i)
+              .language("en")
+              .isVerified(i % 2 == 0)
+              .isPublic(true)
+              .build());
 
+      // 2) Managed reference ile kullan (detached riskini bitirir)
+      Profile ref = profileRepository.getReferenceById(saved.getId());
+
+      // 3) Child kayıtları — @MapsId + OneToOne/ManyToOne parent=ref
       profilePrefsRepository.save(ProfilePrefs.builder()
-          .profileId(profile.getId())
-          .showEmail(i % 2 == 0)
-          .showLocation(true)
-          .showLinks(true)
-          .searchable(true)
-          .allowDm(true)
-          .showCollection(true)
-          .showListings(true)
-          .build());
+              .profile(ref)
+              .showEmail(i % 2 == 0)
+              .showLocation(true)
+              .showLinks(true)
+              .searchable(true)
+              .allowDm(true)
+              .showCollection(true)
+              .showListings(true)
+              .build());
 
       notificationSettingsRepository.save(NotificationSettings.builder()
-          .profileId(profile.getId())
-          .emailGeneral(true)
-          .emailMessage(true)
-          .emailFavorite(true)
-          .emailListingActivity(true)
-          .pushGeneral(true)
-          .digestFrequency("WEEKLY")
-          .build());
+              .profile(ref)
+              .emailGeneral(true)
+              .emailMessage(true)
+              .emailFavorite(true)
+              .emailListingActivity(true)
+              .pushGeneral(true)
+              .digestFrequency(DigestFrequency.WEEKLY) // enum
+              .build());
 
       profileStatsRepository.save(ProfileStats.builder()
-          .profileId(profile.getId())
-          .itemsCount(5)
-          .listingsActiveCount(2)
-          .favoritesCount(10)
-          .followersCount(3)
-          .responseRate((short) 90)
-          .lastActiveAt(Instant.now())
-          .build());
+              .profile(ref)
+              .itemsCount(5)
+              .listingsActiveCount(2)
+              .favoritesCount(10)
+              .followersCount(3)
+              .responseRate((short) 90)
+              .lastActiveAt(Instant.now())
+              .build());
 
       profileLinkRepository.save(ProfileLink.builder()
-          .profileId(profile.getId())
-          .type(ProfileLinkType.INSTAGRAM)
-          .label("IG " + i)
-          .url("https://instagram.com/user" + i)
-          .idx(0)
-          .isPublic(true)
-          .build());
+              .profile(ref) // <-- profileId yerine entity ref
+              .type(ProfileLinkType.INSTAGRAM)
+              .label("IG " + i)
+              .url("https://instagram.com/user" + i)
+              .idx(0)
+              .isPublic(true)
+              .build());
 
       profileFeaturedItemRepository.save(ProfileFeaturedItem.builder()
-          .id(new FeaturedItemId(profile.getId(), i))
-          .idx(0)
-          .build());
+              .id(new FeaturedItemId(ref.getId(), i))
+              .profile(ref) // <-- composite key ile eş
+              .idx(0)
+              .build());
     }
   }
 
@@ -151,35 +159,33 @@ public class TestDataLoader implements CommandLineRunner {
 
       for (long i = 1; i <= 3; i++) {
         var l = Listing.builder()
-            .sellerUserId(i) // user i
-            .title("Sample Listing " + i)
-            .description("Demo description " + i)
-            .brandId(brandId)
-            .seriesId(seriesId)
-            .modelName("Nissan Skyline GT-R R34")
-            .scale("1:64")
-            .modelYear((short)(1998 + i))
-            .condition(Condition.MINT)
-            .limitedEdition(i != 2) // 1 ve 3 true
-            .theme("JDM")
-            .countryOfOrigin("Japan")
-            .type(i == 3 ? ListingType.TRADE : ListingType.SALE)
-            .price(i == 3 ? null : new BigDecimal("199.99"))
-            .currency(i == 3 ? null : "USD")
-            .location("Izmir, TR")
-            .status(ListingStatus.ACTIVE)
-            .isActive(Boolean.TRUE)
-            .build();
+                .sellerUserId(i) // user i
+                .title("Sample Listing " + i)
+                .description("Demo description " + i)
+                .brandId(brandId)
+                .seriesId(seriesId)
+                .modelName("Nissan Skyline GT-R R34")
+                .scale("1:64")
+                .modelYear((short)(1998 + i))
+                .condition(Condition.MINT)
+                .limitedEdition(i != 2) // 1 ve 3 true
+                .theme("JDM")
+                .countryOfOrigin("Japan")
+                .type(i == 3 ? ListingType.TRADE : ListingType.SALE)
+                .price(i == 3 ? null : new BigDecimal("199.99"))
+                .currency(i == 3 ? null : "USD")
+                .location("Izmir, TR")
+                .status(ListingStatus.ACTIVE)
+                .isActive(Boolean.TRUE)
+                .build();
 
         l = listingRepository.save(l);
 
-        // images
         listingImageRepository.saveAll(List.of(
-            ListingImage.builder().listingId(l.getId()).url("https://picsum.photos/seed/" + i + "/800/600").idx(0).build(),
-            ListingImage.builder().listingId(l.getId()).url("https://picsum.photos/seed/" + i + "b/800/600").idx(1).build()
+                ListingImage.builder().listingId(l.getId()).url("https://picsum.photos/seed/" + i + "/800/600").idx(0).build(),
+                ListingImage.builder().listingId(l.getId()).url("https://picsum.photos/seed/" + i + "b/800/600").idx(1).build()
         ));
 
-        // tags: JDM + (Movie Car or F1)
         var allTags = tagRepository.findAll();
         var jdm = allTags.stream().filter(t -> "jdm".equalsIgnoreCase(t.getSlug())).findFirst().orElse(null);
         var movie = allTags.stream().filter(t -> "movie-car".equalsIgnoreCase(t.getSlug())).findFirst().orElse(null);
@@ -192,4 +198,3 @@ public class TestDataLoader implements CommandLineRunner {
     }
   }
 }
-

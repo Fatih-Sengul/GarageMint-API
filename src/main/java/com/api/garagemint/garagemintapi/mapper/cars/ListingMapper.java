@@ -8,9 +8,8 @@ import java.time.Instant;
 import java.util.List;
 
 @Mapper(
-    componentModel = "spring",
-    unmappedTargetPolicy = ReportingPolicy.IGNORE,
-    imports = {ListingType.class, Condition.class, ListingStatus.class}
+        componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
 public interface ListingMapper {
 
@@ -40,9 +39,15 @@ public interface ListingMapper {
   @Mapping(target = "sellerUserId", ignore = true)
   @Mapping(target = "status", ignore = true)
   @Mapping(target = "isActive", ignore = true)
-  // enum-like String → Enum (null toleranslı)
-  @Mapping(target = "type", expression = "java(req.getType()==null?null:ListingType.valueOf(req.getType().toUpperCase()))")
-  @Mapping(target = "condition", expression = "java(req.getCondition()==null?null:Condition.valueOf(req.getCondition().toUpperCase()))")
+  // enum-like String → Enum (null toleranslı) — FQCN kullan!
+  @Mapping(
+          target = "type",
+          expression = "java(req.getType()==null ? null : com.api.garagemint.garagemintapi.model.cars.ListingType.valueOf(req.getType().toUpperCase()))"
+  )
+  @Mapping(
+          target = "condition",
+          expression = "java(req.getCondition()==null ? null : com.api.garagemint.garagemintapi.model.cars.Condition.valueOf(req.getCondition().toUpperCase()))"
+  )
   @Mapping(target = "price", source = "price")
   @Mapping(target = "brandId", source = "brandId")
   @Mapping(target = "seriesId", source = "seriesId")
@@ -50,11 +55,20 @@ public interface ListingMapper {
 
   /* ========= Update DTO -> mevcut Entity ========= */
 
-  // Sadece gelen alanları günceller (null’lar dokunmaz); enum-stringleri parse ederiz.
+  // Sadece gelen alanları günceller (null’lar dokunmaz); enum-stringleri parse ederiz. — FQCN kullan!
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-  @Mapping(target = "type", expression = "java(req.getType()==null?entity.getType():ListingType.valueOf(req.getType().toUpperCase()))")
-  @Mapping(target = "condition", expression = "java(req.getCondition()==null?entity.getCondition():Condition.valueOf(req.getCondition().toUpperCase()))")
-  @Mapping(target = "status", expression = "java(req.getStatus()==null?entity.getStatus():ListingStatus.valueOf(req.getStatus().toUpperCase()))")
+  @Mapping(
+          target = "type",
+          expression = "java(req.getType()==null ? entity.getType() : com.api.garagemint.garagemintapi.model.cars.ListingType.valueOf(req.getType().toUpperCase()))"
+  )
+  @Mapping(
+          target = "condition",
+          expression = "java(req.getCondition()==null ? entity.getCondition() : com.api.garagemint.garagemintapi.model.cars.Condition.valueOf(req.getCondition().toUpperCase()))"
+  )
+  @Mapping(
+          target = "status",
+          expression = "java(req.getStatus()==null ? entity.getStatus() : com.api.garagemint.garagemintapi.model.cars.ListingStatus.valueOf(req.getStatus().toUpperCase()))"
+  )
   void updateEntity(@MappingTarget Listing entity, ListingUpdateRequest req);
 
   /* ========= Basit yardımcı map’ler ========= */
@@ -68,4 +82,3 @@ public interface ListingMapper {
   @Named("iso")
   default String iso(Instant i) { return i == null ? null : i.toString(); }
 }
-
