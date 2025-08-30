@@ -3,6 +3,7 @@ package com.api.garagemint.garagemintapi.dto.profile;
 import lombok.*;
 import java.time.Instant;
 import java.util.List;
+import com.api.garagemint.garagemintapi.dto.cars.ListingResponseDto;
 
 @Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
 public class ProfileOwnerDto {
@@ -25,4 +26,5 @@ public class ProfileOwnerDto {
   private ProfilePrefsDto prefs;
   private NotificationSettingsDto notificationSettings;
   private ProfileStatsDto stats;
+  private List<ListingResponseDto> listings;
 }
