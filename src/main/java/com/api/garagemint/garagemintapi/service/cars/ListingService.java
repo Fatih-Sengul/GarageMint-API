@@ -110,6 +110,15 @@ public class ListingService {
         .stream().map(l -> assembleResponse(l.getId())).toList();
   }
 
+  @Transactional(readOnly = true)
+  public List<ListingResponseDto> listPublicActive(Long sellerUserId) {
+    return listingRepo.findBySellerUserIdAndStatus(sellerUserId, ListingStatus.ACTIVE)
+        .stream()
+        .filter(l -> Boolean.TRUE.equals(l.getIsActive()))
+        .map(l -> assembleResponse(l.getId()))
+        .toList();
+  }
+
   /* =============== UPDATE =============== */
 
   @Transactional

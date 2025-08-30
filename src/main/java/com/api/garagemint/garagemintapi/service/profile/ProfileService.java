@@ -7,6 +7,7 @@ import com.api.garagemint.garagemintapi.repository.*;
 import com.api.garagemint.garagemintapi.service.exception.BusinessRuleException;
 import com.api.garagemint.garagemintapi.service.exception.NotFoundException;
 import com.api.garagemint.garagemintapi.service.exception.ValidationException;
+import com.api.garagemint.garagemintapi.service.cars.ListingService;
 import com.api.garagemint.garagemintapi.service.profile.util.ReservedUsernames;
 import com.api.garagemint.garagemintapi.service.profile.validator.LinkValidator;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class ProfileService {
   private final NotificationSettingsRepository notifRepo;
   private final ProfileStatsRepository statsRepo;
   private final ProfileMapper mapper;
+  private final ListingService listingService;
 
   /* -------------------- PUBLIC -------------------- */
 
@@ -43,6 +45,7 @@ public class ProfileService {
       dto.setWebsiteUrl(null);
       dto.setLinks(List.of());
       dto.setStats(null);
+      dto.setListings(List.of());
       return dto;
     }
 
@@ -52,6 +55,9 @@ public class ProfileService {
     var stats = statsRepo.findById(p.getId())
         .orElseGet(() -> ProfileStats.builder().profileId(p.getId()).build());
     dto.setStats(mapper.toDto(stats));
+
+    var listings = listingService.listPublicActive(p.getUserId());
+    dto.setListings(listings);
 
     return dto;
   }
@@ -131,6 +137,9 @@ public class ProfileService {
 
     var stats = statsRepo.findById(p.getId()).orElseGet(() -> defaultsStats(p));
     ownerDto.setStats(mapper.toDto(stats));
+
+    var listings = listingService.listMyActive(p.getUserId());
+    ownerDto.setListings(listings);
 
     return ownerDto;
   }
