@@ -3,7 +3,7 @@ package com.api.garagemint.garagemintapi.service.profile;
 import com.api.garagemint.garagemintapi.dto.profile.*;
 import com.api.garagemint.garagemintapi.mapper.profile.ProfileMapper;
 import com.api.garagemint.garagemintapi.model.profile.*;
-import com.api.garagemint.garagemintapi.repository.*;
+import com.api.garagemint.garagemintapi.repository.profiles.*;
 import com.api.garagemint.garagemintapi.service.exception.BusinessRuleException;
 import com.api.garagemint.garagemintapi.service.exception.NotFoundException;
 import com.api.garagemint.garagemintapi.service.exception.ValidationException;

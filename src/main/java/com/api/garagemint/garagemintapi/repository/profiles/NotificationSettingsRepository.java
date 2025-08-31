@@ -1,4 +1,4 @@
-package com.api.garagemint.garagemintapi.repository;
+package com.api.garagemint.garagemintapi.repository.profiles;
 
 
 import com.api.garagemint.garagemintapi.model.profile.NotificationSettings;

@@ -1,10 +1,17 @@
 app:
   name: GarageMint API
+  uploads:
+    root: ${UPLOAD_ROOT:./uploads}                  # dosyalar buraya yazılacak
+    base-url: ${UPLOAD_BASE_URL:http://localhost:8080/uploads}  # public URL
 
 server:
   port: 8080
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   h2:
     console:
       enabled: true

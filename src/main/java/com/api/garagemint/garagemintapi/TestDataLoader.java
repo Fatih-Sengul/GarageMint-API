@@ -1,9 +1,9 @@
 package com.api.garagemint.garagemintapi;
 
 import com.api.garagemint.garagemintapi.model.profile.*;
-import com.api.garagemint.garagemintapi.repository.*;
 import com.api.garagemint.garagemintapi.model.cars.*;
 import com.api.garagemint.garagemintapi.repository.cars.*;
+import com.api.garagemint.garagemintapi.repository.profiles.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

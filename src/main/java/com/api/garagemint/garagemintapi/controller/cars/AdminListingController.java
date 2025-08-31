@@ -22,4 +22,3 @@ public class AdminListingController {
     return listingService.moderate(id, req.getIsActive(), req.getStatus());
   }
 }
-
