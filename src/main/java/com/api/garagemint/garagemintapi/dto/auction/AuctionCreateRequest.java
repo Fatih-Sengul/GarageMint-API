@@ -9,6 +9,21 @@ import java.time.Instant;
 public class AuctionCreateRequest {
   private Long listingId; // opsiyonel
 
+  @NotBlank @Size(max=180)
+  private String title;
+
+  @Size(max=4000)
+  private String description;
+
+  @Size(max=80)
+  private String brand;
+
+  @Size(max=80)
+  private String model;
+
+  @Size(max=120)
+  private String location;
+
   @NotNull @DecimalMin("0.01")
   private BigDecimal startPrice;
 

@@ -14,4 +14,5 @@ public class AuctionListItemDto {
   private String currency;
   private AuctionStatus status;
   private Instant endsAt;
+  private String coverUrl;
 }

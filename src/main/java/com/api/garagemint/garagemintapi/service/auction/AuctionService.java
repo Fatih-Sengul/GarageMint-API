@@ -5,13 +5,17 @@ import com.api.garagemint.garagemintapi.mapper.auction.AuctionMapper;
 import com.api.garagemint.garagemintapi.model.auction.*;
 import com.api.garagemint.garagemintapi.repository.auction.AuctionBidRepository;
 import com.api.garagemint.garagemintapi.repository.auction.AuctionRepository;
+import com.api.garagemint.garagemintapi.repository.auction.AuctionImageRepository;
+import com.api.garagemint.garagemintapi.repository.profiles.ProfileRepository;
 import com.api.garagemint.garagemintapi.service.exception.BusinessRuleException;
 import com.api.garagemint.garagemintapi.service.exception.NotFoundException;
 import com.api.garagemint.garagemintapi.service.exception.ValidationException;
 import com.api.garagemint.garagemintapi.service.notification.EmailService;
+import com.api.garagemint.garagemintapi.service.storage.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -26,29 +30,40 @@ public class AuctionService {
 
   private final AuctionRepository auctionRepo;
   private final AuctionBidRepository bidRepo;
+  private final AuctionImageRepository imageRepo;
+  private final ProfileRepository profileRepo;
   private final AuctionMapper mapper;
   private final EmailService emailService;
+  private final FileStorageService storage;
 
   /* ========= PUBLIC ========= */
 
   @Transactional(readOnly = true)
   public AuctionResponseDto getAuction(Long id) {
     var a = auctionRepo.findById(id).orElseThrow(() -> new NotFoundException("Auction not found"));
-    return mapper.toDto(a);
+    var dto = mapper.toDto(a);
+    var images = imageRepo.findByAuctionIdOrderByIdxAsc(a.getId());
+    dto.setImages(mapper.toImageDtoList(images));
+    return dto;
   }
 
   @Transactional(readOnly = true)
   public List<AuctionListItemDto> listActiveAuctions() {
     return auctionRepo.findByStatus(AuctionStatus.ACTIVE).stream()
-        .map(a -> AuctionListItemDto.builder()
-            .id(a.getId())
-            .listingId(a.getListingId())
-            .startPrice(a.getStartPrice())
-            .highestBidAmount(a.getHighestBidAmount())
-            .currency(a.getCurrency())
-            .status(a.getStatus())
-            .endsAt(a.getEndsAt())
-            .build())
+        .map(a -> {
+            var cover = imageRepo.findFirstByAuctionIdOrderByIdxAsc(a.getId())
+                .map(AuctionImage::getUrl).orElse(null);
+            return AuctionListItemDto.builder()
+                .id(a.getId())
+                .listingId(a.getListingId())
+                .startPrice(a.getStartPrice())
+                .highestBidAmount(a.getHighestBidAmount())
+                .currency(a.getCurrency())
+                .status(a.getStatus())
+                .endsAt(a.getEndsAt())
+                .coverUrl(cover)
+                .build();
+        })
         .toList();
   }
 
@@ -56,7 +71,18 @@ public class AuctionService {
   public List<BidResponseDto> getBids(Long auctionId) {
     var a = auctionRepo.findById(auctionId).orElseThrow(() -> new NotFoundException("Auction not found"));
     return bidRepo.findByAuction_IdOrderByCreatedAtAsc(a.getId()).stream()
-        .map(mapper::toDto)
+        .map(b -> {
+            var dto = mapper.toDto(b);
+            profileRepo.findByUserId(dto.getBidderUserId()).ifPresent(p ->
+                dto.setBidder(BidderSummaryDto.builder()
+                    .userId(p.getUserId())
+                    .username(p.getUsername())
+                    .displayName(p.getDisplayName())
+                    .avatarUrl(p.getAvatarUrl())
+                    .build())
+            );
+            return dto;
+        })
         .toList();
   }
 
@@ -83,6 +109,11 @@ public class AuctionService {
     var a = Auction.builder()
         .sellerUserId(sellerUserId)
         .listingId(req.getListingId())
+        .title(req.getTitle())
+        .description(req.getDescription())
+        .brand(req.getBrand())
+        .model(req.getModel())
+        .location(req.getLocation())
         .startPrice(req.getStartPrice())
         .currency("TRY")
         .startsAt(startsAt)
@@ -147,7 +178,37 @@ public class AuctionService {
     a.setHighestBidUserId(bidderUserId);
     auctionRepo.save(a);
 
-    return mapper.toDto(bid);
+    var dto = mapper.toDto(bid);
+    profileRepo.findByUserId(bidderUserId).ifPresent(p ->
+        dto.setBidder(BidderSummaryDto.builder()
+            .userId(p.getUserId())
+            .username(p.getUsername())
+            .displayName(p.getDisplayName())
+            .avatarUrl(p.getAvatarUrl())
+            .build())
+    );
+    return dto;
+  }
+
+  @Transactional
+  public List<AuctionImageDto> uploadImages(Long sellerUserId, Long auctionId, List<MultipartFile> files) {
+    if (files == null || files.isEmpty()) throw new ValidationException("files are required");
+    if (files.size() > 3) throw new ValidationException("max 3 images");
+
+    var a = auctionRepo.findById(auctionId).orElseThrow(() -> new NotFoundException("Auction not found"));
+    if (!a.getSellerUserId().equals(sellerUserId)) throw new BusinessRuleException("Forbidden");
+
+    imageRepo.deleteByAuctionId(auctionId);
+
+    List<AuctionImage> imgs = new java.util.ArrayList<>();
+    int idx = 0;
+    for (MultipartFile f : files) {
+      String url = storage.saveImage(f, "auctions");
+      imgs.add(AuctionImage.builder().auctionId(auctionId).url(url).idx(idx++).build());
+    }
+
+    var saved = imageRepo.saveAll(imgs);
+    return mapper.toImageDtoList(saved);
   }
 
   /* ========= CLOSURE / SCHEDULER ========= */

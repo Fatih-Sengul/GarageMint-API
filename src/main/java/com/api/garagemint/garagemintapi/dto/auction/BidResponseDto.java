@@ -11,4 +11,5 @@ public class BidResponseDto {
   private Long bidderUserId;
   private BigDecimal amount;
   private Instant createdAt;
+  private BidderSummaryDto bidder;
 }
