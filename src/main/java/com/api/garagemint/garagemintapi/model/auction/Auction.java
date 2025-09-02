@@ -30,6 +30,25 @@ public class Auction extends BaseTime {
   @Column(name="listing_id")
   private Long listingId;
 
+  /** Başlık */
+  @Column(length = 180, nullable = false)
+  private String title;
+
+  /** Açıklama */
+  @Column(columnDefinition = "TEXT")
+  private String description;
+
+  /** Opsiyonel marka/model */
+  @Column(length = 80)
+  private String brand;
+
+  @Column(length = 80)
+  private String model;
+
+  /** Opsiyonel konum */
+  @Column(length = 120)
+  private String location;
+
   /** Başlangıç fiyatı (TRY) */
   @Column(name="start_price", nullable=false, precision=18, scale=2)
   private BigDecimal startPrice;

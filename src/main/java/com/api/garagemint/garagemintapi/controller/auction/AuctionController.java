@@ -4,13 +4,16 @@ import com.api.garagemint.garagemintapi.dto.auction.*;
 import com.api.garagemint.garagemintapi.service.auction.AuctionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
 @RequestMapping(value="/api/v1/auctions", produces="application/json")
 @RequiredArgsConstructor
+@CrossOrigin(origins = {"http://localhost:3000","http://localhost:3001"}, allowCredentials = "true")
 public class AuctionController {
 
   private final AuctionService auctionService;
@@ -40,6 +43,11 @@ public class AuctionController {
   @PostMapping("/{id}/cancel")
   public AuctionResponseDto cancel(@PathVariable Long id) {
     return auctionService.cancelAuction(1L, id);
+  }
+
+  @PostMapping(value="/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public List<AuctionImageDto> uploadImages(@PathVariable Long id, @RequestPart("files") List<MultipartFile> files) {
+    return auctionService.uploadImages(1L, id, files);
   }
 
   // ---- Bidding (mock userId = 2L) ----
