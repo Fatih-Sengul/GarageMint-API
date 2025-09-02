@@ -27,11 +27,12 @@ public class ProfileService {
   private final ProfileStatsRepository statsRepo;
   private final ProfileMapper mapper;
   private final ListingService listingService;
+  private final ProfileFollowService profileFollowService;
 
   /* -------------------- PUBLIC -------------------- */
 
   @Transactional(readOnly = true)
-  public ProfilePublicDto getPublicProfileByUsername(String username) {
+  public ProfilePublicDto getPublicProfileByUsername(String username, Long viewerUserId) {
     if (username == null || username.isBlank()) throw new ValidationException("username is required");
     var p = profileRepo.findByUsernameIgnoreCase(username)
         .orElseThrow(() -> new NotFoundException("Profile not found"));
@@ -46,18 +47,22 @@ public class ProfileService {
       dto.setLinks(List.of());
       dto.setStats(null);
       dto.setListings(List.of());
-      return dto;
+    } else {
+      var links = linkRepo.findByProfile_IdAndIsPublicTrueOrderByIdxAsc(p.getId());
+      dto.setLinks(mapper.toLinkDtoList(links));
+
+      var stats = statsRepo.findById(p.getId())
+          .orElseGet(() -> ProfileStats.builder().profileId(p.getId()).build());
+      dto.setStats(mapper.toDto(stats));
+
+      var listings = listingService.listPublicActive(p.getUserId());
+      dto.setListings(listings);
     }
 
-    var links = linkRepo.findByProfile_IdAndIsPublicTrueOrderByIdxAsc(p.getId());
-    dto.setLinks(mapper.toLinkDtoList(links));
-
-    var stats = statsRepo.findById(p.getId())
-        .orElseGet(() -> ProfileStats.builder().profileId(p.getId()).build());
-    dto.setStats(mapper.toDto(stats));
-
-    var listings = listingService.listPublicActive(p.getUserId());
-    dto.setListings(listings);
+    // viewer context
+    boolean following = profileFollowService.isFollowing(viewerUserId, p.getId());
+    dto.setIsFollowing(following);
+    dto.setIsFollowedByMe(following);
 
     return dto;
   }
@@ -137,6 +142,8 @@ public class ProfileService {
 
     var stats = statsRepo.findById(p.getId()).orElseGet(() -> defaultsStats(p));
     ownerDto.setStats(mapper.toDto(stats));
+    ownerDto.setFollowersCount(stats.getFollowersCount());
+    ownerDto.setFollowingCount(stats.getFollowingCount());
 
     var listings = listingService.listMyActive(p.getUserId());
     ownerDto.setListings(listings);
