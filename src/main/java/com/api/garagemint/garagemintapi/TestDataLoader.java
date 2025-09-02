@@ -216,6 +216,7 @@ public class TestDataLoader implements CommandLineRunner {
     Auction a1 = Auction.builder()
         .sellerUserId(1L)                 // satıcı: user1
         .listingId(listing1)              // opsiyonel
+        .title("Seed Auction 1")
         .startPrice(new BigDecimal("100.00"))
         .currency("TRY")
         .startsAt(now.minus(Duration.ofHours(1))) // 1 saat önce başladı
@@ -237,6 +238,7 @@ public class TestDataLoader implements CommandLineRunner {
     Auction a2 = Auction.builder()
         .sellerUserId(2L)
         .listingId(listing2)
+        .title("Seed Auction 2")
         .startPrice(new BigDecimal("250.00"))
         .currency("TRY")
         .startsAt(now.plus(Duration.ofHours(2)))
@@ -249,6 +251,7 @@ public class TestDataLoader implements CommandLineRunner {
     Auction a3 = Auction.builder()
         .sellerUserId(3L)
         .listingId(listing1)
+        .title("Seed Auction 3")
         .startPrice(new BigDecimal("80.00"))
         .currency("TRY")
         .startsAt(now.minus(Duration.ofDays(10)))
@@ -267,6 +270,7 @@ public class TestDataLoader implements CommandLineRunner {
     Auction a4 = Auction.builder()
         .sellerUserId(4L)
         .listingId(null)
+        .title("Seed Auction 4")
         .startPrice(new BigDecimal("60.00"))
         .currency("TRY")
         .startsAt(now.plus(Duration.ofHours(1)))
