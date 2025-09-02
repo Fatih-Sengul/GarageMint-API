@@ -13,6 +13,8 @@ public interface ProfileMapper {
   @Mapping(target = "links", ignore = true)
   @Mapping(target = "stats", ignore = true)
   @Mapping(target = "listings", ignore = true)
+  @Mapping(target = "isFollowing", ignore = true)
+  @Mapping(target = "isFollowedByMe", ignore = true)
   ProfilePublicDto toPublicDto(Profile profile);
 
   @Mapping(target = "links", ignore = true)
@@ -20,6 +22,8 @@ public interface ProfileMapper {
   @Mapping(target = "notificationSettings", ignore = true)
   @Mapping(target = "stats", ignore = true)
   @Mapping(target = "listings", ignore = true)
+  @Mapping(target = "followersCount", ignore = true)
+  @Mapping(target = "followingCount", ignore = true)
   ProfileOwnerDto toOwnerDto(Profile profile);
 
   // Links

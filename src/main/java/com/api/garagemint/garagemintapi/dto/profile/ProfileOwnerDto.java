@@ -26,5 +26,9 @@ public class ProfileOwnerDto {
   private ProfilePrefsDto prefs;
   private NotificationSettingsDto notificationSettings;
   private ProfileStatsDto stats;
+
+  private Integer followersCount;
+  private Integer followingCount;
+
   private List<ListingResponseDto> listings;
 }

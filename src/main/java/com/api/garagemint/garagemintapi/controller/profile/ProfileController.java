@@ -19,8 +19,9 @@ public class ProfileController {
     // ---- Public Endpoints ----
 
     @GetMapping("/{username}")
-    public ProfilePublicDto getPublicProfile(@PathVariable String username) {
-        return profileService.getPublicProfileByUsername(username);
+    public ProfilePublicDto getPublicProfile(@PathVariable String username,
+                                             @RequestParam(name="viewerUserId", required=false) Long viewerUserId) {
+        return profileService.getPublicProfileByUsername(username, viewerUserId);
     }
 
     @GetMapping("/check-username")

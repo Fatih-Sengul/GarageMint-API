@@ -25,4 +25,8 @@ public class ProfilePublicDto {
   private List<ProfileLinkDto> links;   // public görünenler
   private ProfileStatsDto stats;        // sayaçlar
   private List<ListingResponseDto> listings;
+
+  // viewer context (optional)
+  private Boolean isFollowing;     // viewer -> target
+  private Boolean isFollowedByMe;  // alias of isFollowing
 }
