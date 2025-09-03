@@ -37,7 +37,7 @@ public class ListingResponseDto {
   private String location;
 
   // Moderasyon & state
-  private String status;       // ACTIVE/SOLD/WITHDRAWN
+  private String status;       // ACTIVE/INACTIVE/SOLD
   private Boolean isActive;    // admin override
 
   // Zamanlar (ISO-8601)

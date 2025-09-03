@@ -40,6 +40,16 @@ public class AuctionController {
     return auctionService.createAuction(1L, req);
   }
 
+  @PutMapping("/{id}")
+  public AuctionResponseDto update(@PathVariable Long id, @Valid @RequestBody AuctionUpdateRequest req) {
+    return auctionService.updateAuction(1L, id, req);
+  }
+
+  @DeleteMapping("/{id}")
+  public void delete(@PathVariable Long id) {
+    auctionService.deleteAuction(1L, id);
+  }
+
   @PostMapping("/{id}/cancel")
   public AuctionResponseDto cancel(@PathVariable Long id) {
     return auctionService.cancelAuction(1L, id);

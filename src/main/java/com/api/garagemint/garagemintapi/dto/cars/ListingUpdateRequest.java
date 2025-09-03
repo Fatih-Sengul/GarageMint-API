@@ -1,60 +1,36 @@
 package com.api.garagemint.garagemintapi.dto.cars;
 
-import lombok.*;
-import jakarta.validation.constraints.*;
-import java.math.BigDecimal;
-import java.util.List;
+import com.api.garagemint.garagemintapi.model.cars.ListingStatus;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Getter @Setter @Builder
-@NoArgsConstructor @AllArgsConstructor
+import java.math.BigDecimal;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ListingUpdateRequest {
 
-  @Size(max=180)
+  @Size(max = 180)
   private String title;
 
-  @Size(max=20_000)
+  @Size(max = 2_000)
   private String description;
-
-  private Long brandId;
-  private Long seriesId;
-
-  @Size(max=180)
-  private String modelName;
-
-  @Size(max=16)
-  private String scale;
-
-  private Short modelYear;
-
-  @Size(max=24)
-  private String condition;
-
-  private Boolean limitedEdition;
-
-  @Size(max=80)
-  private String theme;
-
-  @Size(max=64)
-  private String countryOfOrigin;
-
-  // ---- Fiyat ----
-  @Size(max=16)
-  private String type;            // "SALE"/"TRADE"
 
   @Positive
   private BigDecimal price;
 
-  @Pattern(regexp="^[A-Z]{3}$")
+  @Pattern(regexp = "^[A-Z]{3}$")
   private String currency;
 
-  @Size(max=120)
-  private String location;
-
-  // ---- Çoklu seçmeli ----
-  private List<Long> tagIds;
-  private List<ListingImageUpsertDto> images;
-
-  // ---- Kullanıcı güncellemeleri için opsiyonel (status genelde PATCH ile ayrı yönetilir) ----
-  @Size(max=16)
-  private String status;          // "ACTIVE","SOLD","WITHDRAWN"
+  private ListingStatus status;
 }
+
