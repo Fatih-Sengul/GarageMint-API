@@ -21,9 +21,7 @@ spring:
     username: sa
   jpa:
     hibernate:
-      ddl-auto: validate
-    properties:
-      hibernate.hbm2ddl.auto: none
+      ddl-auto: update
     flyway:
       enabled: true
 
