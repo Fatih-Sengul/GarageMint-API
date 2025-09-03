@@ -23,6 +23,10 @@ spring:
     hibernate:
       ddl-auto: create-drop
 
+      ddl-auto: update
+    flyway:
+      enabled: true
+
   management:
     endpoints:
       web:
