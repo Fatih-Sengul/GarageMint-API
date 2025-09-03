@@ -21,10 +21,11 @@ spring:
     username: sa
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
-      hibernate:
-        format_sql: true
+      hibernate.hbm2ddl.auto: none
+    flyway:
+      enabled: true
 
   management:
     endpoints:
