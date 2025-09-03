@@ -23,7 +23,7 @@ public class ListingFilterRequest {
   private Boolean limitedEdition;
 
   private String type;             // "SALE" / "TRADE"
-  private String status;           // "ACTIVE","SOLD","WITHDRAWN"
+  private String status;           // "ACTIVE","INACTIVE","SOLD"
 
   private String location;         // free-text
 

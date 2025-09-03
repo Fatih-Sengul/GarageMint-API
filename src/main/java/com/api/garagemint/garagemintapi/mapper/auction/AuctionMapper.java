@@ -18,4 +18,7 @@ public interface AuctionMapper {
 
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   void updateAuctionFromCreate(AuctionCreateRequest req, @MappingTarget Auction a);
+
+  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+  void updateEntity(@MappingTarget Auction entity, AuctionUpdateRequest req);
 }

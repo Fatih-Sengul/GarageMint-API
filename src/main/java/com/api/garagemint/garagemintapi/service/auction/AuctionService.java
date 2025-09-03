@@ -141,6 +141,36 @@ public class AuctionService {
     return mapper.toDto(a);
   }
 
+  @Transactional
+  public AuctionResponseDto updateAuction(Long sellerUserId, Long auctionId, AuctionUpdateRequest req) {
+    var a = auctionRepo.findById(auctionId).orElseThrow(() -> new NotFoundException("Auction not found"));
+    if (!a.getSellerUserId().equals(sellerUserId)) throw new BusinessRuleException("Not owner");
+    if (a.getStatus() == AuctionStatus.ENDED) throw new BusinessRuleException("Auction already ended");
+
+    Instant oldEndsAt = a.getEndsAt();
+    mapper.updateEntity(a, req);
+
+    if (req.getEndsAt() != null) {
+      if (a.getEndsAt().isBefore(a.getStartsAt())) {
+        throw new ValidationException("endsAt cannot be before startsAt");
+      }
+      if (a.getStatus() == AuctionStatus.ACTIVE && a.getEndsAt().isBefore(oldEndsAt)) {
+        throw new BusinessRuleException("cannot shorten active auction");
+      }
+    }
+
+    auctionRepo.save(a);
+    return mapper.toDto(a);
+  }
+
+  @Transactional
+  public void deleteAuction(Long sellerUserId, Long auctionId) {
+    var a = auctionRepo.findById(auctionId).orElseThrow(() -> new NotFoundException("Auction not found"));
+    if (!a.getSellerUserId().equals(sellerUserId)) throw new BusinessRuleException("Not owner");
+    a.setStatus(AuctionStatus.CANCELLED);
+    auctionRepo.save(a);
+  }
+
   /* ========= BIDDING ========= */
 
   @Transactional

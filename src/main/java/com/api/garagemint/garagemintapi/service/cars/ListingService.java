@@ -216,27 +216,24 @@ public class ListingService {
   /* ======================== UPDATE ======================== */
 
   @Transactional
-  public ListingResponseDto update(Long sellerUserId, Long id, ListingUpdateRequest req) {
+  public ListingResponseDto updateListing(Long sellerUserId, Long id, ListingUpdateRequest req) {
     Listing e = load(id);
     ensureOwner(sellerUserId, e);
 
     mapper.updateEntity(e, req);
 
-    if (req.getBrandId() != null) ensureBrandExists(e.getBrandId());
-    if (req.getSeriesId() != null) ensureSeriesExists(e.getSeriesId());
-
     if (e.getType() == ListingType.SALE) {
-      if (e.getPrice() == null || e.getPrice().compareTo(BigDecimal.ZERO) <= 0)
+      if (e.getPrice() == null || e.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
         throw new ValidationException("price must be > 0 for SALE");
-      if (!StringUtils.hasText(e.getCurrency()))
+      }
+      if (!StringUtils.hasText(e.getCurrency())) {
         throw new ValidationException("currency is required for SALE");
+      }
     } else {
-      e.setPrice(null);
-      e.setCurrency(null);
+      if (e.getPrice() != null || e.getCurrency() != null) {
+        throw new ValidationException("price & currency must be null for TRADE");
+      }
     }
-
-    if (req.getImages() != null) upsertImagesInternal(id, req.getImages());
-    if (req.getTagIds() != null) upsertTagsInternal(id, req.getTagIds());
 
     listingRepo.save(e);
     return assembleResponse(id);
@@ -284,12 +281,12 @@ public class ListingService {
   /* ======================== DELETE ======================== */
 
   @Transactional
-  public void delete(Long sellerUserId, Long id) {
+  public void deleteListing(Long sellerUserId, Long id) {
     Listing e = load(id);
     ensureOwner(sellerUserId, e);
-    imageRepo.deleteByListingId(id);
-    listingTagRepo.deleteByIdListingId(id);
-    listingRepo.deleteById(id);
+    e.setIsActive(Boolean.FALSE);
+    e.setStatus(ListingStatus.INACTIVE);
+    listingRepo.save(e);
   }
 
   /* ======================== HELPERS ======================== */
@@ -306,7 +303,7 @@ public class ListingService {
 
   private void ensureOwner(Long sellerUserId, Listing e) {
     if (!Objects.equals(e.getSellerUserId(), sellerUserId)) {
-      throw new BusinessRuleException("not your listing");
+      throw new BusinessRuleException("Not owner");
     }
   }
 

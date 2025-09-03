@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping(value="/api/v1/cars/listings", produces="application/json")
+@RequestMapping(value="/api/v1/listings", produces="application/json")
 @RequiredArgsConstructor
 @CrossOrigin(origins = {"http://localhost:3000","http://localhost:3001"}, allowCredentials = "true")
 
@@ -102,10 +102,10 @@ public class ListingController {
   @PutMapping("/{id}")
   public ListingResponseDto update(@PathVariable Long id, @Valid @RequestBody ListingUpdateRequest req) {
     Long currentUserId = 1L;
-    return listingService.update(currentUserId, id, req);
+    return listingService.updateListing(currentUserId, id, req);
   }
 
-  // Status değişimi (ACTIVE/SOLD/WITHDRAWN)
+  // Status değişimi (ACTIVE/SOLD/INACTIVE)
   @PatchMapping("/{id}/status")
   public ListingResponseDto patchStatus(@PathVariable Long id, @RequestParam String status) {
     Long currentUserId = 1L;
@@ -130,7 +130,7 @@ public class ListingController {
   @DeleteMapping("/{id}")
   public void delete(@PathVariable Long id) {
     Long currentUserId = 1L;
-    listingService.delete(currentUserId, id);
+    listingService.deleteListing(currentUserId, id);
   }
 }
 
