@@ -7,6 +7,10 @@ import com.api.garagemint.garagemintapi.repository.profiles.*;
 import com.api.garagemint.garagemintapi.model.cars.*;
 import com.api.garagemint.garagemintapi.repository.cars.*;
 
+import com.api.garagemint.garagemintapi.model.auth.*;
+import com.api.garagemint.garagemintapi.repository.auth.UserAccountRepository;
+import com.api.garagemint.garagemintapi.service.profile.ProfileService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import com.api.garagemint.garagemintapi.model.auction.*;
 import com.api.garagemint.garagemintapi.repository.auction.*;
 
@@ -43,6 +47,9 @@ public class TestDataLoader implements CommandLineRunner {
   private final AuctionRepository auctionRepository;
   private final AuctionBidRepository auctionBidRepository;
   private final AuctionImageRepository auctionImageRepository;
+  private final UserAccountRepository userAccountRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final ProfileService profileService;
 
   public TestDataLoader(ProfileRepository profileRepository,
                         ProfilePrefsRepository profilePrefsRepository,
@@ -58,6 +65,9 @@ public class TestDataLoader implements CommandLineRunner {
                         ListingTagRepository listingTagRepository,
                         AuctionRepository auctionRepository,
                         AuctionBidRepository auctionBidRepository,
+                        UserAccountRepository userAccountRepository,
+                        PasswordEncoder passwordEncoder,
+                        ProfileService profileService,
                         AuctionImageRepository auctionImageRepository) {
     this.profileRepository = profileRepository;
     this.profilePrefsRepository = profilePrefsRepository;
@@ -74,12 +84,16 @@ public class TestDataLoader implements CommandLineRunner {
     this.auctionRepository = auctionRepository;
     this.auctionBidRepository = auctionBidRepository;
     this.auctionImageRepository = auctionImageRepository;
+    this.userAccountRepository = userAccountRepository;
+    this.passwordEncoder = passwordEncoder;
+    this.profileService = profileService;
   }
 
   @Override
   @Transactional
   public void run(String... args) {
     Map<Long, Profile> profiles = seedProfilesIfEmpty();      // userId -> Profile
+    seedUsersWithProfiles();
     seedFollowsGraph(profiles);                                // follow ilişkileri + sayaçlar
     seedCarsIfEmpty();                                         // brand/series/tags/listings/images/tags
     seedAuctionsIfEmpty(profiles);                             // auctions/images/bids (çeşitli statüler)
@@ -462,5 +476,23 @@ public class TestDataLoader implements CommandLineRunner {
     a.setHighestBidAmount(last.getAmount());
     a.setHighestBidUserId(last.getBidderUserId());
     auctionRepository.save(a);
+  }
+  private void seedUsersWithProfiles() {
+    if (userAccountRepository.count() > 0) return;
+    var u1 = userAccountRepository.save(UserAccount.builder()
+        .email("user1@mail.test").username("user1")
+        .password(passwordEncoder.encode("Passw0rd!"))
+        .enabled(true).role(UserRole.USER).build());
+    var u2 = userAccountRepository.save(UserAccount.builder()
+        .email("user2@mail.test").username("user2")
+        .password(passwordEncoder.encode("Passw0rd!"))
+        .enabled(true).role(UserRole.USER).build());
+    var u3 = userAccountRepository.save(UserAccount.builder()
+        .email("user3@mail.test").username("user3")
+        .password(passwordEncoder.encode("Passw0rd!"))
+        .enabled(true).role(UserRole.USER).build());
+    profileService.ensureMyProfile(u1.getId());
+    profileService.ensureMyProfile(u2.getId());
+    profileService.ensureMyProfile(u3.getId());
   }
 }

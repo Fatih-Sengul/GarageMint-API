@@ -1,6 +1,7 @@
 package com.api.garagemint.garagemintapi.controller.profile;
 
 import com.api.garagemint.garagemintapi.dto.profile.*;
+import com.api.garagemint.garagemintapi.security.SecurityUtil;
 import com.api.garagemint.garagemintapi.service.profile.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +20,8 @@ public class ProfileController {
     // ---- Public Endpoints ----
 
     @GetMapping("/{username}")
-    public ProfilePublicDto getPublicProfile(@PathVariable String username,
-                                             @RequestParam(name="viewerUserId", required=false) Long viewerUserId) {
+    public ProfilePublicDto getPublicProfile(@PathVariable String username) {
+        Long viewerUserId = SecurityUtil.getCurrentUserId();
         return profileService.getPublicProfileByUsername(username, viewerUserId);
     }
 
@@ -29,54 +30,58 @@ public class ProfileController {
         return profileService.checkUsernameAvailability(username);
     }
 
-    // Kullanıcı adı önerileri (autocomplete)
     @GetMapping("/suggest-username")
     public UsernameSuggestionsDto suggestUsername(@RequestParam(required = false) String base) {
         return profileService.suggestUsernames(base);
     }
 
-    // ---- Owner Endpoints (mock userId = 1L) ----
-    // TODO: Gerçekte userId SecurityContext'ten alınacak
+    // ---- Owner Endpoints ----
 
-    // Profil yoksa oluştur + getir (idempotent)
     @PostMapping("/me/init")
     public ProfileOwnerDto initMyProfile() {
-        return profileService.ensureMyProfile(1L);
+        Long uid = SecurityUtil.getCurrentUserId();
+        return profileService.ensureMyProfile(uid);
     }
 
     @GetMapping("/me")
     public ProfileOwnerDto getMyProfile() {
-        return profileService.getMyProfile(1L);
+        Long uid = SecurityUtil.getCurrentUserId();
+        return profileService.getMyProfile(uid);
     }
 
     @PutMapping("/me")
     public ProfileOwnerDto updateMyProfile(@Valid @RequestBody ProfileUpdateRequest req) {
-        return profileService.updateMyProfile(1L, req);
+        Long uid = SecurityUtil.getCurrentUserId();
+        return profileService.updateMyProfile(uid, req);
     }
 
     @PutMapping("/me/avatar")
     public ProfileOwnerDto updateMyAvatar(@RequestParam String avatarUrl) {
-        return profileService.updateMyAvatar(1L, avatarUrl);
+        Long uid = SecurityUtil.getCurrentUserId();
+        return profileService.updateMyAvatar(uid, avatarUrl);
     }
 
     @PutMapping("/me/banner")
     public ProfileOwnerDto updateMyBanner(@RequestParam String bannerUrl) {
-        return profileService.updateMyBanner(1L, bannerUrl);
+        Long uid = SecurityUtil.getCurrentUserId();
+        return profileService.updateMyBanner(uid, bannerUrl);
     }
 
     @PutMapping("/me/links")
     public List<ProfileLinkDto> updateMyLinks(@RequestBody List<@Valid ProfileLinkDto> links) {
-        return profileService.upsertMyLinks(1L, links);
+        Long uid = SecurityUtil.getCurrentUserId();
+        return profileService.upsertMyLinks(uid, links);
     }
 
     @PutMapping("/me/prefs")
     public ProfilePrefsDto updateMyPrefs(@Valid @RequestBody ProfilePrefsUpdateRequest req) {
-        return profileService.updateMyPrefs(1L, req);
+        Long uid = SecurityUtil.getCurrentUserId();
+        return profileService.updateMyPrefs(uid, req);
     }
 
     @PutMapping("/me/notifications")
     public NotificationSettingsDto updateMyNotifications(@Valid @RequestBody NotificationSettingsUpdateRequest req) {
-        return profileService.updateMyNotificationSettings(1L, req);
+        Long uid = SecurityUtil.getCurrentUserId();
+        return profileService.updateMyNotificationSettings(uid, req);
     }
 }
-

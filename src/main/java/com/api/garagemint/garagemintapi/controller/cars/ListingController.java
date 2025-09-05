@@ -1,6 +1,7 @@
 package com.api.garagemint.garagemintapi.controller.cars;
 
 import com.api.garagemint.garagemintapi.dto.cars.*;
+import com.api.garagemint.garagemintapi.security.SecurityUtil;
 import com.api.garagemint.garagemintapi.service.cars.ListingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,6 @@ import java.util.List;
 @RequestMapping(value="/api/v1/listings", produces="application/json")
 @RequiredArgsConstructor
 @CrossOrigin(origins = {"http://localhost:3000","http://localhost:3001"}, allowCredentials = "true")
-
 public class ListingController {
 
   private final ListingService listingService;
@@ -26,7 +26,6 @@ public class ListingController {
     return listingService.getPublicById(id);
   }
 
-  // GET /api/v1/cars/listings?brandIds=1,2&seriesIds=5&theme=JDM&priceMin=100&size=24
   @GetMapping
   public Page<ListingResponseDto> searchByQuery(
       @RequestParam(required = false) Long sellerUserId,
@@ -73,64 +72,61 @@ public class ListingController {
     return listingService.search(f);
   }
 
-  // POST /api/v1/cars/listings/search (body ile filtre)
   @PostMapping("/search")
   public Page<ListingResponseDto> search(@Valid @RequestBody ListingFilterRequest filter) {
     return listingService.search(filter);
   }
 
-  // -------------------- OWNER (mock userId=1L) --------------------
+  // -------------------- OWNER --------------------
 
   @PostMapping
   public ListingResponseDto create(@Valid @RequestBody ListingCreateRequest req) {
-    Long currentUserId = 1L; // TODO: SecurityContext
+    Long currentUserId = SecurityUtil.getCurrentUserId();
     return listingService.create(currentUserId, req);
   }
 
   @GetMapping("/me/{id}")
   public ListingResponseDto getMine(@PathVariable Long id) {
-    Long currentUserId = 1L;
+    Long currentUserId = SecurityUtil.getCurrentUserId();
     return listingService.getMyById(currentUserId, id);
   }
 
   @GetMapping("/me")
-  public List<ListingResponseDto> listMyActive() {
-    Long currentUserId = 1L;
-    return listingService.listMyActive(currentUserId);
+  public Page<ListingResponseDto> listMine(@RequestParam(defaultValue = "0") int page,
+                                           @RequestParam(defaultValue = "20") int size) {
+    Long currentUserId = SecurityUtil.getCurrentUserId();
+    return listingService.listMy(currentUserId, page, size);
   }
 
   @PutMapping("/{id}")
   public ListingResponseDto update(@PathVariable Long id, @Valid @RequestBody ListingUpdateRequest req) {
-    Long currentUserId = 1L;
+    Long currentUserId = SecurityUtil.getCurrentUserId();
     return listingService.updateListing(currentUserId, id, req);
   }
 
-  // Status değişimi (ACTIVE/SOLD/INACTIVE)
   @PatchMapping("/{id}/status")
   public ListingResponseDto patchStatus(@PathVariable Long id, @RequestParam String status) {
-    Long currentUserId = 1L;
+    Long currentUserId = SecurityUtil.getCurrentUserId();
     return listingService.patchStatus(currentUserId, id, status);
   }
 
-  // Medya & etiketleri replace et
   @PutMapping("/{id}/images")
   public List<ListingImageDto> replaceImages(@PathVariable Long id,
                                              @Valid @RequestBody List<ListingImageUpsertDto> images) {
-    Long currentUserId = 1L;
+    Long currentUserId = SecurityUtil.getCurrentUserId();
     return listingService.replaceImages(currentUserId, id, images);
   }
 
   @PutMapping("/{id}/tags")
   public List<TagDto> replaceTags(@PathVariable Long id,
                                   @RequestBody List<Long> tagIds) {
-    Long currentUserId = 1L;
+    Long currentUserId = SecurityUtil.getCurrentUserId();
     return listingService.replaceTags(currentUserId, id, tagIds);
   }
 
   @DeleteMapping("/{id}")
   public void delete(@PathVariable Long id) {
-    Long currentUserId = 1L;
+    Long currentUserId = SecurityUtil.getCurrentUserId();
     listingService.deleteListing(currentUserId, id);
   }
 }
-

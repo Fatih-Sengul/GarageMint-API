@@ -102,6 +102,14 @@ public class ListingService {
   }
 
   @Transactional(readOnly = true)
+  public Page<ListingResponseDto> listMy(Long sellerUserId, int page, int size) {
+    Pageable p = PageRequest.of(Math.max(0,page), Math.min(100, Math.max(1,size)), Sort.by(Sort.Direction.DESC, "createdAt"));
+    Page<Listing> pageRes = listingRepo.findBySellerUserId(sellerUserId, p);
+    List<ListingResponseDto> dtos = pageRes.getContent().stream().map(l -> assembleResponse(l.getId())).toList();
+    return new PageImpl<>(dtos, p, pageRes.getTotalElements());
+  }
+
+  @Transactional(readOnly = true)
   public List<ListingResponseDto> listPublicActive(Long sellerUserId) {
     return listingRepo.findBySellerUserIdAndStatus(sellerUserId, ListingStatus.ACTIVE)
             .stream().filter(l -> Boolean.TRUE.equals(l.getIsActive()))

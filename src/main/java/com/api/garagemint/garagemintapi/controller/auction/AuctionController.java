@@ -1,6 +1,7 @@
 package com.api.garagemint.garagemintapi.controller.auction;
 
 import com.api.garagemint.garagemintapi.dto.auction.*;
+import com.api.garagemint.garagemintapi.security.SecurityUtil;
 import com.api.garagemint.garagemintapi.service.auction.AuctionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,36 +35,41 @@ public class AuctionController {
     return auctionService.getBids(id);
   }
 
-  // ---- Seller (mock userId = 1L) ----
+  // ---- Seller ----
   @PostMapping
   public AuctionResponseDto create(@Valid @RequestBody AuctionCreateRequest req) {
-    return auctionService.createAuction(1L, req);
+    Long uid = SecurityUtil.getCurrentUserId();
+    return auctionService.createAuction(uid, req);
   }
 
   @PutMapping("/{id}")
   public AuctionResponseDto update(@PathVariable Long id, @Valid @RequestBody AuctionUpdateRequest req) {
-    return auctionService.updateAuction(1L, id, req);
+    Long uid = SecurityUtil.getCurrentUserId();
+    return auctionService.updateAuction(uid, id, req);
   }
 
   @DeleteMapping("/{id}")
   public void delete(@PathVariable Long id) {
-    auctionService.deleteAuction(1L, id);
+    Long uid = SecurityUtil.getCurrentUserId();
+    auctionService.deleteAuction(uid, id);
   }
 
   @PostMapping("/{id}/cancel")
   public AuctionResponseDto cancel(@PathVariable Long id) {
-    return auctionService.cancelAuction(1L, id);
+    Long uid = SecurityUtil.getCurrentUserId();
+    return auctionService.cancelAuction(uid, id);
   }
 
   @PostMapping(value="/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public List<AuctionImageDto> uploadImages(@PathVariable Long id, @RequestPart("files") List<MultipartFile> files) {
-    return auctionService.uploadImages(1L, id, files);
+    Long uid = SecurityUtil.getCurrentUserId();
+    return auctionService.uploadImages(uid, id, files);
   }
 
-  // ---- Bidding (mock userId = 2L) ----
-  // Not: Gerçekte bidder userId, SecurityContext'ten gelecek
+  // ---- Bidding ----
   @PostMapping("/{id}/bids")
   public BidResponseDto bid(@PathVariable Long id, @Valid @RequestBody BidCreateRequest req) {
-    return auctionService.placeBid(2L, id, req);
+    Long uid = SecurityUtil.getCurrentUserId();
+    return auctionService.placeBid(uid, id, req);
   }
 }
