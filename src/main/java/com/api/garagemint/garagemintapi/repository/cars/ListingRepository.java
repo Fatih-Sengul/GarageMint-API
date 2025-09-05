@@ -14,5 +14,7 @@ public interface ListingRepository
   long countBySellerUserIdAndStatus(Long sellerUserId, ListingStatus status);
 
   List<Listing> findBySellerUserIdAndStatus(Long sellerUserId, ListingStatus status);
+
+  org.springframework.data.domain.Page<Listing> findBySellerUserId(Long sellerUserId, org.springframework.data.domain.Pageable pageable);
 }
 

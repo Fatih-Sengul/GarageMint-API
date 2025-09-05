@@ -1,6 +1,7 @@
 package com.api.garagemint.garagemintapi.controller.profile;
 
 import com.api.garagemint.garagemintapi.dto.profile.FollowListResponse;
+import com.api.garagemint.garagemintapi.security.SecurityUtil;
 import com.api.garagemint.garagemintapi.service.profile.ProfileFollowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -12,8 +13,9 @@ public class ProfileFollowController {
 
   private final ProfileFollowService followService;
 
-  // TODO: gerçek auth gelince meUserId SecurityContext'ten alınacak
-  private Long meUserId() { return 1L; }
+  private Long meUserId() {
+    return SecurityUtil.getCurrentUserId();
+  }
 
   @PostMapping("/{username}/follow")
   public void follow(@PathVariable String username) {
@@ -39,4 +41,3 @@ public class ProfileFollowController {
     return followService.listFollowing(username, page, size);
   }
 }
-

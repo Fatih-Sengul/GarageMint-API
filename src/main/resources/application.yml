@@ -3,11 +3,19 @@ app:
   uploads:
     root: ${UPLOAD_ROOT:./uploads}                  # dosyalar buraya yazılacak
     base-url: ${UPLOAD_BASE_URL:http://localhost:8080/uploads}  # public URL
+  security:
+    jwt:
+      secret: ${JWT_SECRET:dev-super-secret-please-change}
+      access-exp-min: 60
+      issuer: garagemint
 
 server:
   port: 8080
 
 spring:
+  security:
+    filter:
+      dispatcher-types: REQUEST
   servlet:
     multipart:
       max-file-size: 10MB
