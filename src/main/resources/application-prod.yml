@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT:5432}/garage_mint?currentSchema=grg_mint
+    username: ${DB_USER}
+    password: ${DB_PASS}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 4
+
+  jpa:
+    hibernate:
+      ddl-auto: none      # Prod’da Flyway ile
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: grg_mint
+        jdbc:
+          time_zone: UTC
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    schemas: grg_mint
+    default-schema: grg_mint
+    baseline-on-migrate: true
+    locations: classpath:db/migration

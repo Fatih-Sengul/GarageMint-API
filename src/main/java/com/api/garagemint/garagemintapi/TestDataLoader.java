@@ -15,6 +15,7 @@ import com.api.garagemint.garagemintapi.model.auction.*;
 import com.api.garagemint.garagemintapi.repository.auction.*;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Profile({"dev","test"})
 @Component
 public class TestDataLoader implements CommandLineRunner {
 
