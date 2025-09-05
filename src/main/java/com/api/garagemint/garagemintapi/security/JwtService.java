@@ -21,6 +21,9 @@ public class JwtService {
       @Value("${app.security.jwt.secret}") String secret,
       @Value("${app.security.jwt.issuer}") String issuer,
       @Value("${app.security.jwt.access-exp-min}") long accessExpMin) {
+    if (secret.length() < 32) {
+      throw new IllegalArgumentException("JWT secret must be at least 32 characters long");
+    }
     this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     this.issuer = issuer;
     this.accessExpMin = accessExpMin;
