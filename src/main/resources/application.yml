@@ -21,7 +21,7 @@ app:
     base-url: ${UPLOAD_BASE_URL:http://localhost:8080/uploads}
   security:
     jwt:
-      secret: ${JWT_SECRET:dev-super-secret-please-change}
+      secret: ${JWT_SECRET:dev-super-secret-please-change-1234567890}
       access-exp-min: 60
       issuer: garagemint
 
