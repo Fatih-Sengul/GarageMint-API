@@ -13,23 +13,23 @@ public class CorsConfig {
       @Override
       public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
-            .allowedOrigins("http://localhost:3000")
-            .allowedMethods("GET","POST","PUT","PATCH","DELETE","OPTIONS")
+            .allowedOriginPatterns("*")
+            .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowCredentials(true);
 
         registry.addMapping("/api/v1/profiles/*/follow")
-            .allowedOrigins("http://localhost:3000")
-            .allowedMethods("GET","POST","PUT","PATCH","DELETE","OPTIONS")
+            .allowedOriginPatterns("*")
+            .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowCredentials(true);
 
         registry.addMapping("/api/v1/profiles/*/followers")
-            .allowedOrigins("http://localhost:3000")
-            .allowedMethods("GET","POST","PUT","PATCH","DELETE","OPTIONS")
+            .allowedOriginPatterns("*")
+            .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowCredentials(true);
 
         registry.addMapping("/api/v1/profiles/*/following")
-            .allowedOrigins("http://localhost:3000")
-            .allowedMethods("GET","POST","PUT","PATCH","DELETE","OPTIONS")
+            .allowedOriginPatterns("*")
+            .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowCredentials(true);
       }
     };
