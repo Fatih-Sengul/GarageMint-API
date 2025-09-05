@@ -22,6 +22,13 @@ import org.springframework.transaction.annotation.Transactional;
  * creating a couple of user accounts and the corresponding profiles.  It keeps
  * dependencies minimal which makes the start-up process more predictable and
  * easier to maintain.</p>
+ *
+ * <p>The seeded accounts can be used to exercise the authentication flow.
+ * Use either the e-mail address or username together with the shared
+ * password when invoking the <code>/auth/login</code> endpoint.  Both
+ * fields are required by {@link com.api.garagemint.garagemintapi.dto.auth.LoginRequest}.
+ * Example request body:
+ * <pre>{@code {"emailOrUsername": "user1", "password": "Password1!"}}</pre>
  */
 @Profile({"dev", "test"})
 @Component
@@ -31,6 +38,8 @@ public class TestDataLoader implements CommandLineRunner {
   private final UserAccountRepository userAccountRepository;
   private final ProfileService profileService;
   private final PasswordEncoder passwordEncoder;
+
+  private static final String DEMO_PASSWORD = "Password1!";
 
   @Override
   @Transactional
@@ -48,23 +57,23 @@ public class TestDataLoader implements CommandLineRunner {
 
     List<UserAccount> users = List.of(
         UserAccount.builder()
-            .email("user1@mail.test")
+            .email("user1@example.com")
             .username("user1")
-            .password(passwordEncoder.encode("Passw0rd!"))
+            .password(passwordEncoder.encode(DEMO_PASSWORD))
             .enabled(true)
             .role(UserRole.USER)
             .build(),
         UserAccount.builder()
-            .email("user2@mail.test")
+            .email("user2@example.com")
             .username("user2")
-            .password(passwordEncoder.encode("Passw0rd!"))
+            .password(passwordEncoder.encode(DEMO_PASSWORD))
             .enabled(true)
             .role(UserRole.USER)
             .build(),
         UserAccount.builder()
-            .email("user3@mail.test")
+            .email("user3@example.com")
             .username("user3")
-            .password(passwordEncoder.encode("Passw0rd!"))
+            .password(passwordEncoder.encode(DEMO_PASSWORD))
             .enabled(true)
             .role(UserRole.USER)
             .build()
