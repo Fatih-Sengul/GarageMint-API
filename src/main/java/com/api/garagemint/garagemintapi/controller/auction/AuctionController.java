@@ -14,7 +14,6 @@ import java.util.List;
 @RestController
 @RequestMapping(value="/api/v1/auctions", produces="application/json")
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:3000","http://localhost:3001"}, allowCredentials = "true")
 public class AuctionController {
 
   private final AuctionService auctionService;
