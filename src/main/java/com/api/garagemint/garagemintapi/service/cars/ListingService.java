@@ -151,23 +151,17 @@ public class ListingService {
       if (StringUtils.hasText(f.getScale()))
         ps.add(cb.equal(root.get("scale"), f.getScale()));
 
-      if (StringUtils.hasText(f.getCondition())) {
-        Condition cond = safeEnum(Condition.class, f.getCondition());
-        if (cond != null) ps.add(cb.equal(root.get("condition"), cond));
-      }
+      if (f.getCondition() != null)
+        ps.add(cb.equal(root.get("condition"), f.getCondition()));
 
       if (f.getLimitedEdition() != null)
         ps.add(cb.equal(root.get("limitedEdition"), f.getLimitedEdition()));
 
-      if (StringUtils.hasText(f.getType())) {
-        ListingType lt = safeEnum(ListingType.class, f.getType());
-        if (lt != null) ps.add(cb.equal(root.get("type"), lt));
-      }
+      if (f.getType() != null)
+        ps.add(cb.equal(root.get("type"), f.getType()));
 
-      if (StringUtils.hasText(f.getStatus())) {
-        ListingStatus st = safeEnum(ListingStatus.class, f.getStatus());
-        if (st != null) ps.add(cb.equal(root.get("status"), st));
-      }
+      if (f.getStatus() != null)
+        ps.add(cb.equal(root.get("status"), f.getStatus()));
 
       if (StringUtils.hasText(f.getLocation()))
         ps.add(cb.like(cb.lower(root.get("location")), "%" + f.getLocation().toLowerCase() + "%"));
@@ -215,12 +209,6 @@ public class ListingService {
     return PageRequest.of(page, size, Sort.by(dir, prop));
   }
 
-  private static <E extends Enum<E>> E safeEnum(Class<E> e, String v) {
-    if (!StringUtils.hasText(v)) return null;
-    try { return Enum.valueOf(e, v.trim().toUpperCase()); }
-    catch (IllegalArgumentException ex) { return null; }
-  }
-
   /* ======================== UPDATE ======================== */
 
   @Transactional
@@ -250,22 +238,20 @@ public class ListingService {
   /* ===================== STATUS / ADMIN ==================== */
 
   @Transactional
-  public ListingResponseDto patchStatus(Long sellerUserId, Long id, String statusStr) {
+  public ListingResponseDto patchStatus(Long sellerUserId, Long id, ListingStatus status) {
     Listing e = load(id);
     ensureOwner(sellerUserId, e);
-    ListingStatus st = safeEnum(ListingStatus.class, statusStr);
-    if (st == null) throw new ValidationException("invalid status");
-    e.setStatus(st);
+    if (status == null) throw new ValidationException("invalid status");
+    e.setStatus(status);
     listingRepo.save(e);
     return assembleResponse(id);
   }
 
   @Transactional
-  public ListingResponseDto moderate(Long id, Boolean isActive, String statusStr) {
+  public ListingResponseDto moderate(Long id, Boolean isActive, ListingStatus status) {
     Listing e = load(id);
     if (isActive != null) e.setIsActive(isActive);
-    ListingStatus st = safeEnum(ListingStatus.class, statusStr);
-    if (st != null) e.setStatus(st);
+    if (status != null) e.setStatus(status);
     listingRepo.save(e);
     return assembleResponse(id);
   }
@@ -302,7 +288,7 @@ public class ListingService {
   private void validateCreate(ListingCreateRequest req) {
     if (req == null) throw new ValidationException("body is required");
     if (!StringUtils.hasText(req.getTitle())) throw new ValidationException("title is required");
-    if (!StringUtils.hasText(req.getType())) throw new ValidationException("type is required");
+    if (req.getType() == null) throw new ValidationException("type is required");
   }
 
   private Listing load(Long id) {
