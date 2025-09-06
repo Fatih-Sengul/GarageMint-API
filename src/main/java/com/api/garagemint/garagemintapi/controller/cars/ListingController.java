@@ -3,6 +3,9 @@ package com.api.garagemint.garagemintapi.controller.cars;
 import com.api.garagemint.garagemintapi.dto.cars.*;
 import com.api.garagemint.garagemintapi.security.AuthUser;
 import com.api.garagemint.garagemintapi.service.cars.ListingService;
+import com.api.garagemint.garagemintapi.model.cars.Condition;
+import com.api.garagemint.garagemintapi.model.cars.ListingType;
+import com.api.garagemint.garagemintapi.model.cars.ListingStatus;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,10 +38,10 @@ public class ListingController {
       @RequestParam(required = false) List<Long> tagIds,
       @RequestParam(required = false) String theme,
       @RequestParam(required = false) String scale,
-      @RequestParam(required = false) String condition,
+      @RequestParam(required = false) Condition condition,
       @RequestParam(required = false) Boolean limitedEdition,
-      @RequestParam(required = false) String type,
-      @RequestParam(required = false) String status,
+      @RequestParam(required = false) ListingType type,
+      @RequestParam(required = false) ListingStatus status,
       @RequestParam(required = false) String location,
       @RequestParam(required = false) Short modelYearFrom,
       @RequestParam(required = false) Short modelYearTo,
@@ -116,6 +119,11 @@ public class ListingController {
       @PathVariable Long id,
       @RequestParam String status) {
     return listingService.patchStatus(user.id(), id, status);
+
+  public ListingResponseDto patchStatus(@PathVariable Long id, @RequestParam ListingStatus status) {
+    Long currentUserId = SecurityUtil.getCurrentUserId();
+    return listingService.patchStatus(currentUserId, id, status);
+
   }
 
   @PutMapping("/{id}/images")

@@ -5,6 +5,10 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.api.garagemint.garagemintapi.model.cars.Condition;
+import com.api.garagemint.garagemintapi.model.cars.ListingStatus;
+import com.api.garagemint.garagemintapi.model.cars.ListingType;
+
 @Getter @Setter @Builder
 @NoArgsConstructor @AllArgsConstructor
 public class ListingFilterRequest {
@@ -19,11 +23,11 @@ public class ListingFilterRequest {
 
   private String theme;            // tekil string filtresi
   private String scale;            // "1:64"
-  private String condition;        // "NEW","MINT","USED","CUSTOM"
+  private Condition condition;        // NEW/MINT/USED/CUSTOM
   private Boolean limitedEdition;
 
-  private String type;             // "SALE" / "TRADE"
-  private String status;           // "ACTIVE","INACTIVE","SOLD"
+  private ListingType type;             // SALE / TRADE
+  private ListingStatus status;           // ACTIVE/INACTIVE/SOLD
 
   private String location;         // free-text
 

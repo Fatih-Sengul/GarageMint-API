@@ -4,6 +4,10 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.api.garagemint.garagemintapi.model.cars.Condition;
+import com.api.garagemint.garagemintapi.model.cars.ListingStatus;
+import com.api.garagemint.garagemintapi.model.cars.ListingType;
+
 @Getter @Setter @Builder
 @NoArgsConstructor @AllArgsConstructor
 public class ListingResponseDto {
@@ -25,19 +29,19 @@ public class ListingResponseDto {
   private String modelName;
   private String scale;
   private Short modelYear;
-  private String condition;
+  private Condition condition;
   private Boolean limitedEdition;
   private String theme;
   private String countryOfOrigin;
 
   // Fiyat
-  private String type;         // SALE/TRADE
+  private ListingType type;         // SALE/TRADE
   private BigDecimal price;    // null → TRADE
   private String currency;
   private String location;
 
   // Moderasyon & state
-  private String status;       // ACTIVE/INACTIVE/SOLD
+  private ListingStatus status;       // ACTIVE/INACTIVE/SOLD
   private Boolean isActive;    // admin override
 
   // Zamanlar (ISO-8601)

@@ -5,6 +5,9 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.api.garagemint.garagemintapi.model.cars.Condition;
+import com.api.garagemint.garagemintapi.model.cars.ListingType;
+
 @Getter @Setter @Builder
 @NoArgsConstructor @AllArgsConstructor
 public class ListingCreateRequest {
@@ -30,8 +33,7 @@ public class ListingCreateRequest {
 
   private Short modelYear;
 
-  @Size(max=24)
-  private String condition;       // "NEW","MINT","USED","CUSTOM" (enum-like string)
+  private Condition condition;       // NEW/MINT/USED/CUSTOM
 
   private Boolean limitedEdition; // default false
 
@@ -42,8 +44,8 @@ public class ListingCreateRequest {
   private String countryOfOrigin;
 
   // ---- Fiyat ----
-  @NotBlank @Size(max=16)
-  private String type;            // "SALE" veya "TRADE"
+  @NotNull
+  private ListingType type;            // SALE veya TRADE
 
   @Positive
   private BigDecimal price;       // TRADE ise null olabilir
