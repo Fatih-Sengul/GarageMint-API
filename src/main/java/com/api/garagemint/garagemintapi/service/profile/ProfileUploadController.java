@@ -1,10 +1,11 @@
 package com.api.garagemint.garagemintapi.service.profile;
 
 import com.api.garagemint.garagemintapi.dto.profile.ProfileOwnerDto;
-import com.api.garagemint.garagemintapi.security.SecurityUtil;
+import com.api.garagemint.garagemintapi.security.AuthUser;
 import com.api.garagemint.garagemintapi.service.storage.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,16 +19,16 @@ public class ProfileUploadController {
     private final ProfileService profileService;
 
     @PostMapping(value = "/me/avatar/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ProfileOwnerDto uploadAvatar(@RequestPart("file") MultipartFile file) {
-        Long uid = SecurityUtil.getCurrentUserId();
+    public ProfileOwnerDto uploadAvatar(@AuthenticationPrincipal AuthUser me,
+                                        @RequestPart("file") MultipartFile file) {
         String url = storage.saveImage(file, "avatars");
-        return profileService.updateMyAvatar(uid, url);
+        return profileService.updateMyAvatar(me.id(), url);
     }
 
     @PostMapping(value = "/me/banner/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ProfileOwnerDto uploadBanner(@RequestPart("file") MultipartFile file) {
-        Long uid = SecurityUtil.getCurrentUserId();
+    public ProfileOwnerDto uploadBanner(@AuthenticationPrincipal AuthUser me,
+                                        @RequestPart("file") MultipartFile file) {
         String url = storage.saveImage(file, "banners");
-        return profileService.updateMyBanner(uid, url);
+        return profileService.updateMyBanner(me.id(), url);
     }
 }

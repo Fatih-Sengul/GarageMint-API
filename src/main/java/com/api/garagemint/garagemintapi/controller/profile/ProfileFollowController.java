@@ -1,9 +1,10 @@
 package com.api.garagemint.garagemintapi.controller.profile;
 
 import com.api.garagemint.garagemintapi.dto.profile.FollowListResponse;
-import com.api.garagemint.garagemintapi.security.SecurityUtil;
+import com.api.garagemint.garagemintapi.security.AuthUser;
 import com.api.garagemint.garagemintapi.service.profile.ProfileFollowService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,18 +14,16 @@ public class ProfileFollowController {
 
   private final ProfileFollowService followService;
 
-  private Long meUserId() {
-    return SecurityUtil.getCurrentUserId();
-  }
-
   @PostMapping("/{username}/follow")
-  public void follow(@PathVariable String username) {
-    followService.follow(meUserId(), username);
+  public void follow(@PathVariable String username,
+                     @AuthenticationPrincipal AuthUser me) {
+    followService.follow(me.id(), username);
   }
 
   @DeleteMapping("/{username}/follow")
-  public void unfollow(@PathVariable String username) {
-    followService.unfollow(meUserId(), username);
+  public void unfollow(@PathVariable String username,
+                       @AuthenticationPrincipal AuthUser me) {
+    followService.unfollow(me.id(), username);
   }
 
   @GetMapping("/{username}/followers")

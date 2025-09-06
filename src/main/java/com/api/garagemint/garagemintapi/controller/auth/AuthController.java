@@ -1,10 +1,11 @@
 package com.api.garagemint.garagemintapi.controller.auth;
 
 import com.api.garagemint.garagemintapi.dto.auth.*;
-import com.api.garagemint.garagemintapi.security.SecurityUtil;
+import com.api.garagemint.garagemintapi.security.AuthUser;
 import com.api.garagemint.garagemintapi.service.auth.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,9 +26,8 @@ public class AuthController {
   }
 
   @GetMapping("/me")
-  public MeDto me() {
-    Long uid = SecurityUtil.getCurrentUserId();
-    if (uid == null) throw new RuntimeException("unauthorized");
-    return auth.me(uid);
+  public MeDto me(@AuthenticationPrincipal AuthUser user) {
+    if (user == null) throw new RuntimeException("unauthorized");
+    return auth.me(user.id());
   }
 }

@@ -2,7 +2,6 @@ package com.api.garagemint.garagemintapi.controller.profile;
 
 import com.api.garagemint.garagemintapi.dto.profile.*;
 import com.api.garagemint.garagemintapi.security.AuthUser;
-import com.api.garagemint.garagemintapi.security.SecurityUtil;
 import com.api.garagemint.garagemintapi.service.profile.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +21,9 @@ public class ProfileController {
     // ---- Public Endpoints ----
 
     @GetMapping("/{username}")
-    public ProfilePublicDto getPublicProfile(@PathVariable String username) {
-        Long viewerUserId = SecurityUtil.getCurrentUserId();
+    public ProfilePublicDto getPublicProfile(@PathVariable String username,
+                                             @AuthenticationPrincipal AuthUser viewer) {
+        Long viewerUserId = viewer != null ? viewer.id() : null;
         return profileService.getPublicProfileByUsername(username, viewerUserId);
     }
 
@@ -51,38 +51,39 @@ public class ProfileController {
     }
 
     @PutMapping("/me")
-    public ProfileOwnerDto updateMyProfile(@Valid @RequestBody ProfileUpdateRequest req) {
-        Long uid = SecurityUtil.getCurrentUserId();
-        return profileService.updateMyProfile(uid, req);
+    public ProfileOwnerDto updateMyProfile(@AuthenticationPrincipal AuthUser me,
+                                           @Valid @RequestBody ProfileUpdateRequest req) {
+        return profileService.updateMyProfile(me.id(), req);
     }
 
     @PutMapping("/me/avatar")
-    public ProfileOwnerDto updateMyAvatar(@RequestParam String avatarUrl) {
-        Long uid = SecurityUtil.getCurrentUserId();
-        return profileService.updateMyAvatar(uid, avatarUrl);
+    public ProfileOwnerDto updateMyAvatar(@AuthenticationPrincipal AuthUser me,
+                                          @RequestParam String avatarUrl) {
+        return profileService.updateMyAvatar(me.id(), avatarUrl);
     }
 
     @PutMapping("/me/banner")
-    public ProfileOwnerDto updateMyBanner(@RequestParam String bannerUrl) {
-        Long uid = SecurityUtil.getCurrentUserId();
-        return profileService.updateMyBanner(uid, bannerUrl);
+    public ProfileOwnerDto updateMyBanner(@AuthenticationPrincipal AuthUser me,
+                                          @RequestParam String bannerUrl) {
+        return profileService.updateMyBanner(me.id(), bannerUrl);
     }
 
     @PutMapping("/me/links")
-    public List<ProfileLinkDto> updateMyLinks(@RequestBody List<@Valid ProfileLinkDto> links) {
-        Long uid = SecurityUtil.getCurrentUserId();
-        return profileService.upsertMyLinks(uid, links);
+    public List<ProfileLinkDto> updateMyLinks(@AuthenticationPrincipal AuthUser me,
+                                              @RequestBody List<@Valid ProfileLinkDto> links) {
+        return profileService.upsertMyLinks(me.id(), links);
     }
 
     @PutMapping("/me/prefs")
-    public ProfilePrefsDto updateMyPrefs(@Valid @RequestBody ProfilePrefsUpdateRequest req) {
-        Long uid = SecurityUtil.getCurrentUserId();
-        return profileService.updateMyPrefs(uid, req);
+    public ProfilePrefsDto updateMyPrefs(@AuthenticationPrincipal AuthUser me,
+                                         @Valid @RequestBody ProfilePrefsUpdateRequest req) {
+        return profileService.updateMyPrefs(me.id(), req);
     }
 
     @PutMapping("/me/notifications")
-    public NotificationSettingsDto updateMyNotifications(@Valid @RequestBody NotificationSettingsUpdateRequest req) {
-        Long uid = SecurityUtil.getCurrentUserId();
-        return profileService.updateMyNotificationSettings(uid, req);
+    public NotificationSettingsDto updateMyNotifications(
+            @AuthenticationPrincipal AuthUser me,
+            @Valid @RequestBody NotificationSettingsUpdateRequest req) {
+        return profileService.updateMyNotificationSettings(me.id(), req);
     }
 }
