@@ -1,11 +1,13 @@
 package com.api.garagemint.garagemintapi.controller.profile;
 
 import com.api.garagemint.garagemintapi.dto.profile.*;
+import com.api.garagemint.garagemintapi.security.AuthUser;
 import com.api.garagemint.garagemintapi.security.SecurityUtil;
 import com.api.garagemint.garagemintapi.service.profile.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 
@@ -37,16 +39,15 @@ public class ProfileController {
 
     // ---- Owner Endpoints ----
 
+    @Deprecated
     @PostMapping("/me/init")
-    public ProfileOwnerDto initMyProfile() {
-        Long uid = SecurityUtil.getCurrentUserId();
-        return profileService.ensureMyProfile(uid);
+    public ProfileOwnerDto initMyProfile(@AuthenticationPrincipal AuthUser me) {
+        return profileService.ensureMyProfile(me.id());
     }
 
     @GetMapping("/me")
-    public ProfileOwnerDto getMyProfile() {
-        Long uid = SecurityUtil.getCurrentUserId();
-        return profileService.getMyProfile(uid);
+    public ProfileOwnerDto getMyProfile(@AuthenticationPrincipal AuthUser me) {
+        return profileService.ensureMyProfile(me.id());
     }
 
     @PutMapping("/me")

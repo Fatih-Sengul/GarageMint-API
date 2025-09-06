@@ -7,7 +7,7 @@ public final class SecurityUtil {
   private SecurityUtil() {}
   public static Long getCurrentUserId() {
     Authentication a = SecurityContextHolder.getContext().getAuthentication();
-    if (a == null || !(a.getPrincipal() instanceof JwtAuthenticationFilter.AuthenticatedUser p)) return null;
-    return p.getUserId();
+    if (a == null || !(a.getPrincipal() instanceof AuthUser p)) return null;
+    return p.id();
   }
 }
