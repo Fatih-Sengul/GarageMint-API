@@ -6,38 +6,34 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.util.List;
-
 @Configuration
 public class CorsConfig {
 
   @Value("${cors.allowed-origins}")
-  private List<String> allowedOrigins;
+  private String[] allowedOrigins;
 
   @Bean
   public WebMvcConfigurer corsConfigurer() {
     return new WebMvcConfigurer() {
       @Override
       public void addCorsMappings(CorsRegistry registry) {
-        String[] origins = allowedOrigins.toArray(new String[0]);
-
         registry.addMapping("/api/**")
-            .allowedOrigins(origins)
+            .allowedOrigins(allowedOrigins)
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowCredentials(true);
 
         registry.addMapping("/api/v1/profiles/*/follow")
-            .allowedOrigins(origins)
+            .allowedOrigins(allowedOrigins)
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowCredentials(true);
 
         registry.addMapping("/api/v1/profiles/*/followers")
-            .allowedOrigins(origins)
+            .allowedOrigins(allowedOrigins)
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowCredentials(true);
 
         registry.addMapping("/api/v1/profiles/*/following")
-            .allowedOrigins(origins)
+            .allowedOrigins(allowedOrigins)
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowCredentials(true);
       }
