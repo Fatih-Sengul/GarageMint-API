@@ -27,7 +27,6 @@ public class AuthController {
   @GetMapping("/me")
   public MeDto me() {
     Long uid = SecurityUtil.getCurrentUserId();
-    if (uid == null) throw new RuntimeException("unauthorized");
     return auth.me(uid);
   }
 }

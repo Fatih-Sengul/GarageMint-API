@@ -33,7 +33,8 @@ public class SecurityConfig {
       .cors(cors -> cors.configurationSource(corsSource()))
       .sessionManagement(sm -> sm.sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
       .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/api/v1/auth/**").permitAll()
+        .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login").permitAll()
+        .requestMatchers("/api/v1/auth/me").authenticated()
         .requestMatchers("/api/v1/profiles/*").permitAll()
         .requestMatchers(HttpMethod.GET, "/api/v1/listings", "/api/v1/listings/*").permitAll()
         .requestMatchers("/h2/**", "/actuator/**").permitAll()
