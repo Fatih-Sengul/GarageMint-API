@@ -1,7 +1,8 @@
-package com.api.garagemint.garagemintapi.service.profile;
+package com.api.garagemint.garagemintapi.controller.profile;
 
 import com.api.garagemint.garagemintapi.dto.profile.ProfileOwnerDto;
 import com.api.garagemint.garagemintapi.security.SecurityUtil;
+import com.api.garagemint.garagemintapi.service.profile.ProfileService;
 import com.api.garagemint.garagemintapi.service.storage.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
