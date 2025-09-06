@@ -51,7 +51,7 @@ public class ListingController {
       @RequestParam(defaultValue = "createdAt") String sortBy,
       @RequestParam(defaultValue = "DESC") String sortDir
   ) {
-    var f = ListingFilterRequest.builder()
+    ListingFilterRequest f = ListingFilterRequest.builder()
         .sellerUserId(sellerUserId)
         .brandIds(brandIds)
         .seriesIds(seriesIds)
@@ -118,10 +118,6 @@ public class ListingController {
       @PathVariable Long id,
       @RequestParam String status) {
     return listingService.patchStatus(user.id(), id, status);
-
-  public ListingResponseDto patchStatus(@PathVariable Long id, @RequestParam ListingStatus status) {
-    Long currentUserId = SecurityUtil.getCurrentUserId();
-    return listingService.patchStatus(currentUserId, id, status);
 
   }
 
