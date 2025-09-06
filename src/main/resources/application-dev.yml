@@ -31,6 +31,4 @@ spring:
     locations: classpath:db/migration
 
 cors:
-  allowed-origins:
-    - http://localhost:3000
-    - http://localhost:3001
+  allowed-origins: http://localhost:3000,http://localhost:3001

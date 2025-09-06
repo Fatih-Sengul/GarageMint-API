@@ -21,9 +21,7 @@ spring:
       path: /h2
 
 cors:
-  allowed-origins:
-    - http://localhost:3000
-    - http://localhost:3001
+  allowed-origins: http://localhost:3000,http://localhost:3001
 
 app:
   security:

@@ -27,5 +27,4 @@ spring:
     locations: classpath:db/migration
 
 cors:
-  allowed-origins:
-    - https://garagemint.com
+  allowed-origins: https://garagemint.com
