@@ -4,6 +4,7 @@ import com.api.garagemint.garagemintapi.security.JwtAuthenticationFilter;
 import com.api.garagemint.garagemintapi.security.JwtService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -33,7 +34,8 @@ public class SecurityConfig {
       .sessionManagement(sm -> sm.sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
       .authorizeHttpRequests(auth -> auth
         .requestMatchers("/api/v1/auth/**").permitAll()
-        .requestMatchers("/api/v1/profiles/*", "/api/v1/listings", "/api/v1/listings/*", "/api/v1/auctions", "/api/v1/auctions/*").permitAll()
+        .requestMatchers("/api/v1/profiles/*").permitAll()
+        .requestMatchers(HttpMethod.GET, "/api/v1/listings", "/api/v1/listings/*").permitAll()
         .requestMatchers("/h2/**", "/actuator/**").permitAll()
         .requestMatchers("/api/v1/profiles/me/**").authenticated()
         .requestMatchers("/api/v1/listings/**").authenticated()
