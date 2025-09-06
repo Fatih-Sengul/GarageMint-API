@@ -9,7 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.time.Instant;
 import java.util.Date;
-import java.util.Map;
 
 @Service
 public class JwtService {
@@ -34,8 +33,12 @@ public class JwtService {
     Instant exp = now.plusSeconds(accessExpMin * 60);
     return Jwts.builder()
         .setIssuer(issuer)
-        .setSubject(String.valueOf(userId))
-        .setClaims(Map.of("u", username, "r", role))
+        // sub = username
+        .setSubject(username)
+        // mandatory user id claim
+        .claim("uid", userId)
+        // optional role claim
+        .claim("role", role)
         .setIssuedAt(Date.from(now))
         .setExpiration(Date.from(exp))
         .signWith(key, SignatureAlgorithm.HS256)
