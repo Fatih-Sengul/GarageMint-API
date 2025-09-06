@@ -1,11 +1,12 @@
 package com.api.garagemint.garagemintapi.controller.cars;
 
 import com.api.garagemint.garagemintapi.dto.cars.*;
-import com.api.garagemint.garagemintapi.security.SecurityUtil;
+import com.api.garagemint.garagemintapi.security.AuthUser;
 import com.api.garagemint.garagemintapi.service.cars.ListingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -80,53 +81,63 @@ public class ListingController {
   // -------------------- OWNER --------------------
 
   @PostMapping
-  public ListingResponseDto create(@Valid @RequestBody ListingCreateRequest req) {
-    Long currentUserId = SecurityUtil.getCurrentUserId();
-    return listingService.create(currentUserId, req);
+  public ListingResponseDto create(
+      @AuthenticationPrincipal AuthUser user,
+      @Valid @RequestBody ListingCreateRequest req) {
+    return listingService.create(user.id(), req);
   }
 
   @GetMapping("/me/{id}")
-  public ListingResponseDto getMine(@PathVariable Long id) {
-    Long currentUserId = SecurityUtil.getCurrentUserId();
-    return listingService.getMyById(currentUserId, id);
+  public ListingResponseDto getMine(
+      @AuthenticationPrincipal AuthUser user,
+      @PathVariable Long id) {
+    return listingService.getMyById(user.id(), id);
   }
 
   @GetMapping("/me")
-  public Page<ListingResponseDto> listMine(@RequestParam(defaultValue = "0") int page,
-                                           @RequestParam(defaultValue = "20") int size) {
-    Long currentUserId = SecurityUtil.getCurrentUserId();
-    return listingService.listMy(currentUserId, page, size);
+  public Page<ListingResponseDto> listMine(
+      @AuthenticationPrincipal AuthUser user,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "20") int size) {
+    return listingService.listMy(user.id(), page, size);
   }
 
   @PutMapping("/{id}")
-  public ListingResponseDto update(@PathVariable Long id, @Valid @RequestBody ListingUpdateRequest req) {
-    Long currentUserId = SecurityUtil.getCurrentUserId();
-    return listingService.updateListing(currentUserId, id, req);
+  public ListingResponseDto update(
+      @AuthenticationPrincipal AuthUser user,
+      @PathVariable Long id,
+      @Valid @RequestBody ListingUpdateRequest req) {
+    return listingService.updateListing(user.id(), id, req);
   }
 
   @PatchMapping("/{id}/status")
-  public ListingResponseDto patchStatus(@PathVariable Long id, @RequestParam String status) {
-    Long currentUserId = SecurityUtil.getCurrentUserId();
-    return listingService.patchStatus(currentUserId, id, status);
+  public ListingResponseDto patchStatus(
+      @AuthenticationPrincipal AuthUser user,
+      @PathVariable Long id,
+      @RequestParam String status) {
+    return listingService.patchStatus(user.id(), id, status);
   }
 
   @PutMapping("/{id}/images")
-  public List<ListingImageDto> replaceImages(@PathVariable Long id,
-                                             @Valid @RequestBody List<ListingImageUpsertDto> images) {
-    Long currentUserId = SecurityUtil.getCurrentUserId();
-    return listingService.replaceImages(currentUserId, id, images);
+  public List<ListingImageDto> replaceImages(
+      @AuthenticationPrincipal AuthUser user,
+      @PathVariable Long id,
+      @Valid @RequestBody List<ListingImageUpsertDto> images) {
+    return listingService.replaceImages(user.id(), id, images);
   }
 
   @PutMapping("/{id}/tags")
-  public List<TagDto> replaceTags(@PathVariable Long id,
-                                  @RequestBody List<Long> tagIds) {
-    Long currentUserId = SecurityUtil.getCurrentUserId();
-    return listingService.replaceTags(currentUserId, id, tagIds);
+  public List<TagDto> replaceTags(
+      @AuthenticationPrincipal AuthUser user,
+      @PathVariable Long id,
+      @RequestBody List<Long> tagIds) {
+    return listingService.replaceTags(user.id(), id, tagIds);
   }
 
   @DeleteMapping("/{id}")
-  public void delete(@PathVariable Long id) {
-    Long currentUserId = SecurityUtil.getCurrentUserId();
-    listingService.deleteListing(currentUserId, id);
+  public void delete(
+      @AuthenticationPrincipal AuthUser user,
+      @PathVariable Long id) {
+    listingService.deleteListing(user.id(), id);
   }
 }
