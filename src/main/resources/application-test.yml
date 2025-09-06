@@ -19,3 +19,15 @@ spring:
     console:
       enabled: true
       path: /h2
+
+cors:
+  allowed-origins:
+    - http://localhost:3000
+    - http://localhost:3001
+
+app:
+  security:
+    jwt:
+      secret: test-secret
+      access-exp-min: 60
+      issuer: garagemint-test

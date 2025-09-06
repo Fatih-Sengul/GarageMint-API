@@ -1,34 +1,43 @@
 package com.api.garagemint.garagemintapi.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 @Configuration
 public class CorsConfig {
+
+  @Value("${cors.allowed-origins}")
+  private List<String> allowedOrigins;
 
   @Bean
   public WebMvcConfigurer corsConfigurer() {
     return new WebMvcConfigurer() {
       @Override
       public void addCorsMappings(CorsRegistry registry) {
+        String[] origins = allowedOrigins.toArray(new String[0]);
+
         registry.addMapping("/api/**")
-            .allowedOriginPatterns("*")
+            .allowedOrigins(origins)
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowCredentials(true);
 
         registry.addMapping("/api/v1/profiles/*/follow")
-            .allowedOriginPatterns("*")
+            .allowedOrigins(origins)
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowCredentials(true);
 
         registry.addMapping("/api/v1/profiles/*/followers")
-            .allowedOriginPatterns("*")
+            .allowedOrigins(origins)
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowCredentials(true);
 
         registry.addMapping("/api/v1/profiles/*/following")
-            .allowedOriginPatterns("*")
+            .allowedOrigins(origins)
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowCredentials(true);
       }

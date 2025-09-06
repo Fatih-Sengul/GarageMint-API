@@ -25,9 +25,8 @@ public class AuthController {
     return auth.login(req);
   }
 
-  @GetMapping("/me")
   public MeDto me(@AuthenticationPrincipal AuthUser user) {
     if (user == null) throw new RuntimeException("unauthorized");
     return auth.me(user.id());
-  }
+
 }
