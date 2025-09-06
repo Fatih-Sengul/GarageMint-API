@@ -116,7 +116,7 @@ public class ListingController {
   public ListingResponseDto patchStatus(
       @AuthenticationPrincipal AuthUser user,
       @PathVariable Long id,
-      @RequestParam String status) {
+      @RequestParam ListingStatus status) {
     return listingService.patchStatus(user.id(), id, status);
 
   }
