@@ -1,11 +1,12 @@
 package com.api.garagemint.garagemintapi.controller.auction;
 
 import com.api.garagemint.garagemintapi.dto.auction.*;
-import com.api.garagemint.garagemintapi.security.SecurityUtil;
+import com.api.garagemint.garagemintapi.security.AuthUser;
 import com.api.garagemint.garagemintapi.service.auction.AuctionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,39 +37,46 @@ public class AuctionController {
 
   // ---- Seller ----
   @PostMapping
-  public AuctionResponseDto create(@Valid @RequestBody AuctionCreateRequest req) {
-    Long uid = SecurityUtil.getCurrentUserId();
-    return auctionService.createAuction(uid, req);
+  public AuctionResponseDto create(
+      @AuthenticationPrincipal AuthUser user,
+      @Valid @RequestBody AuctionCreateRequest req) {
+    return auctionService.createAuction(user.id(), req);
   }
 
   @PutMapping("/{id}")
-  public AuctionResponseDto update(@PathVariable Long id, @Valid @RequestBody AuctionUpdateRequest req) {
-    Long uid = SecurityUtil.getCurrentUserId();
-    return auctionService.updateAuction(uid, id, req);
+  public AuctionResponseDto update(
+      @AuthenticationPrincipal AuthUser user,
+      @PathVariable Long id,
+      @Valid @RequestBody AuctionUpdateRequest req) {
+    return auctionService.updateAuction(user.id(), id, req);
   }
 
   @DeleteMapping("/{id}")
-  public void delete(@PathVariable Long id) {
-    Long uid = SecurityUtil.getCurrentUserId();
-    auctionService.deleteAuction(uid, id);
+  public void delete(@AuthenticationPrincipal AuthUser user, @PathVariable Long id) {
+    auctionService.deleteAuction(user.id(), id);
   }
 
   @PostMapping("/{id}/cancel")
-  public AuctionResponseDto cancel(@PathVariable Long id) {
-    Long uid = SecurityUtil.getCurrentUserId();
-    return auctionService.cancelAuction(uid, id);
+  public AuctionResponseDto cancel(
+      @AuthenticationPrincipal AuthUser user,
+      @PathVariable Long id) {
+    return auctionService.cancelAuction(user.id(), id);
   }
 
   @PostMapping(value="/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public List<AuctionImageDto> uploadImages(@PathVariable Long id, @RequestPart("files") List<MultipartFile> files) {
-    Long uid = SecurityUtil.getCurrentUserId();
-    return auctionService.uploadImages(uid, id, files);
+  public List<AuctionImageDto> uploadImages(
+      @AuthenticationPrincipal AuthUser user,
+      @PathVariable Long id,
+      @RequestPart("files") List<MultipartFile> files) {
+    return auctionService.uploadImages(user.id(), id, files);
   }
 
   // ---- Bidding ----
   @PostMapping("/{id}/bids")
-  public BidResponseDto bid(@PathVariable Long id, @Valid @RequestBody BidCreateRequest req) {
-    Long uid = SecurityUtil.getCurrentUserId();
-    return auctionService.placeBid(uid, id, req);
+  public BidResponseDto bid(
+      @AuthenticationPrincipal AuthUser user,
+      @PathVariable Long id,
+      @Valid @RequestBody BidCreateRequest req) {
+    return auctionService.placeBid(user.id(), id, req);
   }
 }
