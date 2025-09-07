@@ -89,6 +89,27 @@ public class AuctionService {
 
   /* ========= SELLER ========= */
 
+  @Transactional(readOnly = true)
+  public List<AuctionListItemDto> listAuctionsBySeller(Long sellerUserId) {
+    if (sellerUserId == null) throw new ValidationException("sellerUserId is required");
+    return auctionRepo.findBySellerUserId(sellerUserId).stream()
+        .map(a -> {
+            var cover = imageRepo.findFirstByAuctionIdOrderByIdxAsc(a.getId())
+                .map(AuctionImage::getUrl).orElse(null);
+            return AuctionListItemDto.builder()
+                .id(a.getId())
+                .listingId(a.getListingId())
+                .startPrice(a.getStartPrice())
+                .highestBidAmount(a.getHighestBidAmount())
+                .currency(a.getCurrency())
+                .status(a.getStatus())
+                .endsAt(a.getEndsAt())
+                .coverUrl(cover)
+                .build();
+        })
+        .toList();
+  }
+
   @Transactional
   public AuctionResponseDto createAuction(Long sellerUserId, AuctionCreateRequest req) {
     if (sellerUserId == null) throw new ValidationException("sellerUserId is required");
