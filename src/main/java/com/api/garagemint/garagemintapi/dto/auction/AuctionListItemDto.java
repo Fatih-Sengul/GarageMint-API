@@ -8,6 +8,7 @@ import java.time.Instant;
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class AuctionListItemDto {
   private Long id;
+  private Long sellerUserId;
   private Long listingId;
   private BigDecimal startPrice;
   private BigDecimal highestBidAmount;

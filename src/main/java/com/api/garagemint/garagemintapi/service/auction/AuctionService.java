@@ -55,6 +55,7 @@ public class AuctionService {
                 .map(AuctionImage::getUrl).orElse(null);
             return AuctionListItemDto.builder()
                 .id(a.getId())
+                .sellerUserId(a.getSellerUserId())
                 .listingId(a.getListingId())
                 .startPrice(a.getStartPrice())
                 .highestBidAmount(a.getHighestBidAmount())
