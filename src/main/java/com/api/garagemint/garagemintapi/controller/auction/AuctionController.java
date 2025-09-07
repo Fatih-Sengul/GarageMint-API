@@ -35,6 +35,14 @@ public class AuctionController {
     return auctionService.getBids(id);
   }
 
+  @GetMapping("/seller")
+  public List<AuctionListItemDto> listBySeller(
+      @AuthenticationPrincipal AuthUser user,
+      @RequestParam(value = "userId", required = false) Long userId) {
+    Long uid = (userId != null) ? userId : (user != null ? user.id() : null);
+    return auctionService.listAuctionsBySeller(uid);
+  }
+
   // ---- Seller ----
   @PostMapping
   public AuctionResponseDto create(

@@ -17,6 +17,8 @@ public interface AuctionRepository extends JpaRepository<Auction, Long> {
 
   List<Auction> findByStatus(AuctionStatus status);
 
+  List<Auction> findBySellerUserId(Long userId);
+
   /** Teklif anında optimistic lock yeterli; yine de isteğe bağlı PESSIMISTIC_WRITE desteklemek için aşağıdaki method eklenebilir */
   @Lock(LockModeType.OPTIMISTIC_FORCE_INCREMENT)
   @QueryHints(@QueryHint(name = "jakarta.persistence.lock.timeout", value = "5000"))
