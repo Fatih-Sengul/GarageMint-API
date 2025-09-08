@@ -7,6 +7,7 @@ import com.api.garagemint.garagemintapi.repository.auction.AuctionBidRepository;
 import com.api.garagemint.garagemintapi.repository.auction.AuctionRepository;
 import com.api.garagemint.garagemintapi.repository.auction.AuctionImageRepository;
 import com.api.garagemint.garagemintapi.repository.profiles.ProfileRepository;
+import com.api.garagemint.garagemintapi.model.profile.Profile;
 import com.api.garagemint.garagemintapi.service.exception.BusinessRuleException;
 import com.api.garagemint.garagemintapi.service.exception.NotFoundException;
 import com.api.garagemint.garagemintapi.service.exception.ValidationException;
@@ -42,6 +43,7 @@ public class AuctionService {
   public AuctionResponseDto getAuction(Long id) {
     var a = auctionRepo.findById(id).orElseThrow(() -> new NotFoundException("Auction not found"));
     var dto = mapper.toDto(a);
+    dto.setSellerUsername(fetchUsername(a.getSellerUserId()));
     var images = imageRepo.findByAuctionIdOrderByIdxAsc(a.getId());
     dto.setImages(mapper.toImageDtoList(images));
     return dto;
@@ -56,6 +58,7 @@ public class AuctionService {
             return AuctionListItemDto.builder()
                 .id(a.getId())
                 .sellerUserId(a.getSellerUserId())
+                .sellerUsername(fetchUsername(a.getSellerUserId()))
                 .listingId(a.getListingId())
                 .startPrice(a.getStartPrice())
                 .highestBidAmount(a.getHighestBidAmount())
@@ -98,6 +101,8 @@ public class AuctionService {
                 .map(AuctionImage::getUrl).orElse(null);
             return AuctionListItemDto.builder()
                 .id(a.getId())
+                .sellerUserId(a.getSellerUserId())
+                .sellerUsername(fetchUsername(a.getSellerUserId()))
                 .listingId(a.getListingId())
                 .startPrice(a.getStartPrice())
                 .highestBidAmount(a.getHighestBidAmount())
@@ -146,7 +151,9 @@ public class AuctionService {
         .build();
 
     a = auctionRepo.save(a);
-    return mapper.toDto(a);
+    var dto = mapper.toDto(a);
+    dto.setSellerUsername(fetchUsername(a.getSellerUserId()));
+    return dto;
   }
 
   @Transactional
@@ -160,7 +167,9 @@ public class AuctionService {
     }
     a.setStatus(AuctionStatus.CANCELLED);
     auctionRepo.save(a);
-    return mapper.toDto(a);
+    var dto = mapper.toDto(a);
+    dto.setSellerUsername(fetchUsername(a.getSellerUserId()));
+    return dto;
   }
 
   @Transactional
@@ -182,7 +191,9 @@ public class AuctionService {
     }
 
     auctionRepo.save(a);
-    return mapper.toDto(a);
+    var dto = mapper.toDto(a);
+    dto.setSellerUsername(fetchUsername(a.getSellerUserId()));
+    return dto;
   }
 
   @Transactional
@@ -282,4 +293,9 @@ public class AuctionService {
   }
 
   /* ========= HELPERS ========= */
+  private String fetchUsername(Long userId) {
+    return profileRepo.findByUserId(userId)
+        .map(Profile::getUsername)
+        .orElse(null);
+  }
 }

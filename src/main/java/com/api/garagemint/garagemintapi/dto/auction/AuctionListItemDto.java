@@ -9,6 +9,7 @@ import java.time.Instant;
 public class AuctionListItemDto {
   private Long id;
   private Long sellerUserId;
+  private String sellerUsername;
   private Long listingId;
   private BigDecimal startPrice;
   private BigDecimal highestBidAmount;
