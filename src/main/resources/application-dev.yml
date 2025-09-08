@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/garage_mint?currentSchema=grg_mint
     username: ${DB_USER:postgres}
-    password: ${DB_PASS:postgres}
+    password: ${DB_PASS:fth-1998}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -13,7 +13,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update   # DEV için
+      ddl-auto: create-drop   # DEV için
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect

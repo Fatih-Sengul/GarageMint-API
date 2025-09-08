@@ -30,3 +30,4 @@ public class AuthController {
     return auth.me(user.id());
 
 }
+}

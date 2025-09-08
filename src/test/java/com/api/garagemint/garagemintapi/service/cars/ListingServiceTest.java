@@ -49,7 +49,7 @@ class ListingServiceTest {
     void createSuccess() {
         ListingCreateRequest req = ListingCreateRequest.builder()
                 .title("My Listing")
-                .type("SALE")
+                .type(ListingType.SALE)
                 .price(BigDecimal.TEN)
                 .currency("USD")
                 .build();
@@ -87,7 +87,7 @@ class ListingServiceTest {
     void createFailsWhenMaxActiveListingsReached() {
         ListingCreateRequest req = ListingCreateRequest.builder()
                 .title("My Listing")
-                .type("SALE")
+                .type(ListingType.SALE)
                 .price(BigDecimal.TEN)
                 .currency("USD")
                 .build();
