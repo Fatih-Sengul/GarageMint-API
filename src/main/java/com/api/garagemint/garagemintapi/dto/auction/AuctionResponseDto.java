@@ -10,6 +10,7 @@ import java.util.List;
 public class AuctionResponseDto {
   private Long id;
   private Long sellerUserId;
+  private String sellerUsername;
   private Long listingId;
   private String title;
   private String description;
